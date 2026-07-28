@@ -168,10 +168,18 @@ test.describe('CTAs', () => {
     )
   })
 
-  test('the address links to the business listing', async ({ page }) => {
-    await expect(
-      page.locator('address a[href*="cid="]'),
-    ).toHaveAttribute('href', 'https://www.google.com/maps?cid=1768797045726719715')
+  // Both destinations must be reachable from labelled links. The
+  // profile link used to sit on the address text, where it looked like
+  // a heading and nobody found it.
+  test('the business profile has its own labelled link', async ({ page }) => {
+    const profile = page.getByRole('link', { name: /Reviews & photos/ })
+    await expect(profile).toBeVisible()
+    await expect(profile).toHaveAttribute(
+      'href',
+      'https://www.google.com/maps?cid=1768797045726719715',
+    )
+    // The address itself is plain text now — no hidden affordance.
+    await expect(page.locator('address a')).toHaveCount(0)
   })
 
   test('the tagline appears in the closer and the footer', async ({ page }) => {
