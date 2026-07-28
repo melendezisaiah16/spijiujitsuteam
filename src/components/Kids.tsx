@@ -19,8 +19,8 @@ export function Kids() {
           Confidence they can't be talked out of.
         </h2>
         <p className="text-muted m-0 max-w-[460px] text-base leading-[1.65] sm:text-[17px]">
-          No striking, no shouting. They learn to stay calm when someone bigger is on top of
-          them — and parents watch every minute of it from the side.
+          No striking, no yelling. They learn to stay calm when something is hard and to look
+          after a training partner. Parents are welcome mat-side, every class.
         </p>
         <div className="mt-1.5 flex flex-col gap-2.5 sm:flex-row">
           <a
