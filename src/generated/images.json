@@ -1,0 +1,56 @@
+{
+  "hero-team": {
+    "widths": [
+      640,
+      960,
+      1280,
+      1600
+    ],
+    "width": 1600,
+    "height": 1067,
+    "aspectRatio": 1.4995
+  },
+  "adults-training": {
+    "widths": [
+      480,
+      720,
+      960,
+      1440
+    ],
+    "width": 2063,
+    "height": 1020,
+    "aspectRatio": 2.0225
+  },
+  "kids-class": {
+    "widths": [
+      480,
+      720,
+      960,
+      1440
+    ],
+    "width": 1440,
+    "height": 950,
+    "aspectRatio": 1.5158
+  },
+  "kids-pair": {
+    "widths": [
+      480,
+      720,
+      868
+    ],
+    "width": 868,
+    "height": 330,
+    "aspectRatio": 2.6303
+  },
+  "coach-thomas": {
+    "widths": [
+      480,
+      720,
+      960,
+      1180
+    ],
+    "width": 1180,
+    "height": 1010,
+    "aspectRatio": 1.1683
+  }
+}

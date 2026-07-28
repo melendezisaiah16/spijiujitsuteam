@@ -1,0 +1,253 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   Self-hosted fonts, Latin subset only.
+
+   Declared here with stable filenames rather than imported from
+   @fontsource, because Vite hashes package-imported font URLs and
+   a hashed URL can't be preloaded from index.html. The preload is
+   what actually removes the swap flash — see index.html.
+
+   Files are the Latin woff2 from the @fontsource packages; OFL
+   licences sit alongside them in public/fonts/.
+   ============================================================ */
+@font-face {
+  font-family: 'Big Shoulders Display Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/big-shoulders-display-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans Variable';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ============================================================
+   Metric-matched fallback faces.
+
+   These pair with font-display: swap. Preloading means the real font
+   normally wins the race and no fallback is ever painted; on a slow
+   connection the fallback shows briefly, and these keep it in roughly
+   the same box so the swap doesn't reflow the page.
+
+   font-display: optional was tried here and rejected: on a cold cache
+   it skips the webfont for the whole load, and the entire page renders
+   in generic sans. The condensed display face is the design.
+
+   Big Shoulders Display is condensed — 66.9% the width of Arial at
+   the same size, measured uppercase, which is how the display face
+   is always set. size-adjust is that ratio; the ascent/descent
+   overrides are the real font's metrics divided by it, because
+   size-adjust scales the overrides too.
+
+   The weight ranges matter: without them these faces resolve as
+   regular-only, so a request for 800 gets synthetically emboldened,
+   which widens the text and defeats the whole exercise.
+   ============================================================ */
+@font-face {
+  font-family: 'Big Shoulders Fallback';
+  font-weight: 100 900;
+  src: local('Arial Bold'), local('Arial'), local('Helvetica'), local('Liberation Sans');
+  size-adjust: 66.9%;
+  ascent-override: 148%;
+  descent-override: 32%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Plex Sans Fallback';
+  font-weight: 100 700;
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+  size-adjust: 99.6%;
+  ascent-override: 104.3%;
+  descent-override: 28%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  /* Plex Mono and Courier New share a 0.6em advance, so only the
+     vertical metrics need correcting. */
+  font-family: 'Plex Mono Fallback';
+  font-weight: 400 500;
+  src: local('Courier New'), local('Liberation Mono');
+  size-adjust: 100%;
+  ascent-override: 90%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+/* ============================================================
+   ISLA NOCHE — design tokens
+   Values come from the handoff spec. Two deliberate deviations
+   are marked A11Y below; see README for the rationale.
+   ============================================================ */
+@theme {
+  /* --- Color ------------------------------------------------ */
+  --color-midnight: #0a1428; /* page background, cards            */
+  --color-deep: #07101f; /* alternating section background    */
+  --color-panel: #0d1a31; /* day-tab header, placeholder base  */
+  --color-brand: #264c8d; /* adults track, secondary CTA       */
+  --color-brand-hover: #2a5299;
+  --color-amber: #e2a03f; /* SIGNAL COLOR — free trial only    */
+  --color-sand: #e8dcc8; /* kids & teens track                */
+  --color-bone: #f4f1ea; /* primary text on dark              */
+  --color-body: #c6cdd9; /* secondary text                    */
+  --color-muted: #b7bfcc; /* paragraph copy                    */
+  --color-dim: #8c97a8; /* metadata, mono labels             */
+  --color-faint: #5a6b85; /* decorative only — see faint-text  */
+  --color-hairline: #1c2a44; /* borders, grid gaps                */
+  --color-outline: #24334d; /* card outlines, inputs             */
+  --color-on-blue: #c3d3ee; /* text on brand-blue surfaces       */
+  --color-on-blue-body: #e2eaf7;
+  --color-on-sand: #4a5568; /* sub-label on sand surfaces        */
+  --color-rule: #3a4a66; /* outlined-button borders           */
+  --color-time-blue: #8fabdc; /* non-hero adult class time         */
+
+  /* A11Y: spec #5A4415 on amber is 4.08:1 — below WCAG AA for
+     small text. Darkened to 4.97:1. Hue preserved. */
+  --color-on-amber: #4a3811;
+
+  /* A11Y: amber on brand blue is 3.73:1 — fails AA for the 11px
+     kickers in the coach section. Lightened to 4.79:1. Amber stays
+     the signal colour; only its value on blue surfaces changes. */
+  --color-amber-on-blue: #efbb6a;
+
+  /* A11Y: spec #5A6B85 on midnight is 3.44:1 — below AA. Used
+     for the day note and footer. Lifted to 4.73:1.
+     --color-faint stays exact for non-text decoration. */
+  --color-faint-text: #72829d;
+
+  /* --- Type ------------------------------------------------- */
+  --font-display: 'Big Shoulders Display Variable', 'Big Shoulders Fallback', Arial, sans-serif;
+  --font-sans: 'IBM Plex Sans Variable', 'Plex Sans Fallback', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Plex Mono Fallback', ui-monospace, monospace;
+
+  /* Fluid display ramp. Max values are the 1360px design widths;
+     mins are the mobile floors agreed in the handoff. */
+  --text-hero: clamp(3.25rem, 10.44vw, 142px);
+  --text-hero--line-height: 0.88;
+  --text-display-xl: clamp(2.75rem, 6.69vw, 91px); /* closer      */
+  --text-display-xl--line-height: 0.94;
+  --text-display-lg: clamp(2.5rem, 5.44vw, 74px); /* schedule h2 */
+  --text-display-lg--line-height: 0.95;
+  --text-display-md: clamp(2.25rem, 4.93vw, 67px); /* kids, coach */
+  --text-display-md--line-height: 0.95;
+  --text-display-sm: clamp(2.125rem, 4.56vw, 62px); /* programs   */
+  --text-display-sm--line-height: 0.98;
+  --text-phone-lg: clamp(2.25rem, 3.53vw, 48px); /* closer card   */
+  --text-phone-lg--line-height: 1;
+  --text-phone: clamp(2rem, 3.24vw, 44px); /* hero card           */
+  --text-phone--line-height: 1.05;
+  --text-card-title: clamp(2rem, 3.24vw, 44px); /* program cards  */
+  --text-card-title--line-height: 0.95;
+  --text-class-time: clamp(2.5rem, 3.68vw, 50px);
+  --text-class-time--line-height: 1;
+  --text-class-name: clamp(1.5rem, 2.13vw, 29px);
+  --text-class-name--line-height: 1.05;
+
+  /* --- Radius ----------------------------------------------- */
+  /* Square corners are the look. Wipe the default scale so a
+     stray `rounded-lg` can't creep in. The logo mark and the
+     CTA dot opt back in with an explicit rounded-full. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /*
+      Sticky-header clearance for every in-page anchor, and the single
+      source of truth for it. Sections previously *also* carried
+      scroll-mt-70px, which compounds with this rather than overriding
+      it — anchors landed 140px down and the nav's active-section
+      indicator stayed a section behind. Don't add per-section scroll
+      margins back; change this one value.
+
+      useActiveSection reads this at runtime so the highlight can't
+      drift out of sync with where anchors actually land.
+    */
+    scroll-padding-top: 80px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-midnight);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    /* Room for the mobile sticky CTA bar so it never covers the
+       footer. Cleared at md, where the bar is hidden. */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* One focus treatment everywhere, per the spec. */
+  :focus-visible {
+    outline: 2px solid var(--color-amber);
+    outline-offset: 2px;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+@utility kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,62 @@
+# DigitalOcean App Platform — PRODUCTION (branch: main)
+#
+# This is a STATIC SITE, not a web service. The build emits plain
+# HTML/CSS/JS/images with no server, API or runtime, so a service would
+# cost money monthly to run a container doing nothing a CDN can't.
+#
+#   doctl apps create --spec .do/app.prod.yaml
+#   doctl apps update <app-id> --spec .do/app.prod.yaml
+name: spi-jiu-jitsu
+region: nyc
+
+static_sites:
+  - name: web
+    github:
+      repo: melendezisaiah16/spijiujitsuteam
+      branch: main
+      deploy_on_push: true
+
+    # `--include=dev` is load-bearing. All the build tooling (Vite,
+    # Tailwind, sharp, TypeScript) lives in devDependencies, and
+    # buildpacks commonly set NODE_ENV=production, which makes npm skip
+    # them — the build then dies with "vite: not found".
+    build_command: npm ci --include=dev && npm run build
+    output_dir: dist
+    environment_slug: node-js
+
+    envs:
+      # Floor comes from Vite (^20.19 || >=22.12); see `engines`.
+      - key: NODE_VERSION
+        scope: BUILD_TIME
+        value: "22"
+
+      # Feeds the canonical link, Open Graph tags, JSON-LD and
+      # sitemap.xml. ${APP_URL} tracks wherever the app is reachable,
+      # so adding a custom domain needs no edit here. If your App
+      # Platform version doesn't expand it at build time, paste the
+      # literal URL instead.
+      - key: SITE_URL
+        scope: BUILD_TIME
+        value: ${APP_URL}
+
+      # Keeps this out of Google while it lives on a temporary URL.
+      # DELETE THIS ENTRY WHEN THE REAL DOMAIN GOES LIVE — it is the
+      # only thing standing between you and an indexed site.
+      - key: SITE_NOINDEX
+        scope: BUILD_TIME
+        value: "true"
+
+    # No catchall_document on purpose. It rewrites every unknown path
+    # to index.html, which suits a client-side router and not this —
+    # one page, no routes. A catchall returns 200 for /anything and
+    # manufactures soft 404s.
+
+# domains:
+#   - domain: example.com
+#     type: PRIMARY
+#   - domain: www.example.com
+#     type: ALIAS
+#
+# Once a domain is chosen: add the block above, point DNS at
+# DigitalOcean, and delete the SITE_NOINDEX entry. TLS is automatic and
+# SITE_URL follows ${APP_URL}.
