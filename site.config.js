@@ -6,11 +6,12 @@
  * by scripts/seo.mjs (robots.txt, sitemap.xml).
  *
  * Set the SITE_URL environment variable at build time — that is how
- * .do/app.*.yaml supplies it, so going live is a platform setting
- * rather than a code change. The fallback exists only so local builds
- * work and is deliberately not treated as a real domain.
+ * .do/app.*.yaml supplies it, so a domain change is a platform setting
+ * rather than a code change. The fallback is the gym's real domain,
+ * confirmed 2026-08-01, so a build without the variable still emits
+ * correct canonicals rather than pointing at somewhere nobody owns.
  */
-const FALLBACK = 'https://spijiujitsu.com'
+const FALLBACK = 'https://spijiujitsuteam.com'
 
 /** A bare origin: scheme, host, optional port. Nothing else. */
 const SAFE_ORIGIN = /^https?:\/\/[a-z0-9.-]+(:\d+)?$/i
@@ -66,8 +67,34 @@ function resolveSiteUrl(raw) {
 /** Never a trailing slash — every consumer appends its own path. */
 export const SITE_URL = resolveSiteUrl(process.env.SITE_URL || FALLBACK)
 
-/** True while still on the fallback, so the build can say so out loud. */
-export const SITE_URL_IS_PLACEHOLDER = !process.env.SITE_URL
+/** True when the build fell back rather than being told the domain. */
+export const SITE_URL_IS_FALLBACK = !process.env.SITE_URL
+
+/**
+ * The GA4 measurement ID, or '' when analytics are off.
+ *
+ * Empty is a first-class state, not a failure: dev servers, preview
+ * builds and anyone running this locally should not be writing rows
+ * into the gym's property. Absent an ID no tag is ever loaded and no
+ * request leaves the browser — the event API stays live and inert, so
+ * the instrumentation is still testable.
+ *
+ * Malformed throws rather than silently disabling. A typo'd ID looks
+ * exactly like working analytics until someone asks why the reports
+ * are empty a month later.
+ */
+function resolveMeasurementId(raw) {
+  if (!raw) return ''
+  const trimmed = String(raw).trim()
+  if (!/^G-[A-Z0-9]{6,}$/.test(trimmed)) {
+    throw new Error(
+      `GA_MEASUREMENT_ID must look like G-XXXXXXXXXX, got ${JSON.stringify(raw)}`,
+    )
+  }
+  return trimmed
+}
+
+export const GA_MEASUREMENT_ID = resolveMeasurementId(process.env.GA_MEASUREMENT_ID)
 
 /**
  * Whether search engines may index this build.

@@ -3,7 +3,12 @@ import { Picture } from './Picture'
 
 export function Hero() {
   return (
-    <section id="top" className="relative flex min-h-[560px] items-end lg:h-[660px]">
+    <section
+      id="top"
+      // The id is an anchor target; "top" is a useless name in a report.
+      data-analytics-location="hero"
+      className="relative flex min-h-[560px] items-end lg:h-[660px]"
+    >
       <div className="absolute inset-0">
         <Picture
           id="hero-team"
@@ -22,13 +27,17 @@ export function Hero() {
           <span className="kicker text-amber self-start border border-[#3a4a66] px-3 py-2 tracking-[0.16em]">
             {SITE.affiliate} affiliate · {SITE.city}, {SITE.state}
           </span>
+          {/* "Start", not "Train". Same words for search, but the
+              audience is people who have never done this — a verb that
+              invites them in beats one that describes the activity. */}
           <h1 className="font-display text-hero m-0 tracking-[0.005em] uppercase">
-            Train jiu jitsu
+            Start jiu jitsu
             <br />
             in {SITE.city}.
           </h1>
           <p className="text-body m-0 max-w-[520px] text-[17px] leading-[1.55] sm:text-lg lg:text-xl">
-            Four nights a week, minutes from the causeway. Your first class is free.
+            Four nights a week, minutes from the causeway. First class free — no experience, nothing
+            to sign up for.
           </p>
         </div>
 

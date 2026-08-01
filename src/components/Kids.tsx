@@ -13,7 +13,7 @@ export function Kids() {
     >
       <div className="flex flex-col justify-center gap-5 px-5 py-14 sm:px-8 lg:px-12 lg:py-[72px]">
         <span className="kicker bg-sand text-midnight self-start px-[11px] py-[7px]">
-          Little Ninjas &amp; Kids · ages 4–15
+          Little Ninjas &amp; Big Kids · ages 4–12
         </span>
         <h2 id="kids-heading" className="font-display text-display-md m-0 font-extrabold uppercase">
           Confidence they can't be talked out of.
@@ -34,7 +34,7 @@ export function Kids() {
             onClick={onAnchorClick}
             className="text-bone px-[22px] py-[14px] text-center text-[15px] font-bold transition-colors hover:bg-[#112039] border border-[#3a4a66]"
           >
-            Kids class times
+            See the week
           </a>
         </div>
       </div>
@@ -48,8 +48,8 @@ export function Kids() {
       <div className="border-hairline relative h-[240px] sm:h-[320px] lg:h-auto lg:min-h-[460px] lg:border-l">
         <div className="h-full lg:absolute lg:inset-0">
           <Picture
-            id="kids-class"
-            alt="The SPI Jiu Jitsu kids class lined up on the mat with their coaches."
+            id="kids-podium"
+            alt="A young SPI Jiu Jitsu student on the top step of the podium at a tournament, wearing her medal."
             sizes="(min-width: 1024px) 50vw, 100vw"
             position="center 35%"
           />

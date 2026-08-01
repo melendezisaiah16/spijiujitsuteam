@@ -1,7 +1,7 @@
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { ALLOW_INDEXING, SITE_URL } from './site.config.js'
+import { ALLOW_INDEXING, GA_MEASUREMENT_ID, SITE_URL } from './site.config.js'
 
 /**
  * Substitutes __SITE_URL__ in index.html.
@@ -33,6 +33,21 @@ function siteUrl(): Plugin {
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), siteUrl()],
+  /*
+   * The same origin, available to the React tree.
+   *
+   * The structured data moved out of index.html and into
+   * src/components/StructuredData.tsx so it can be derived from
+   * classes.ts and site.ts instead of hand-copied. That component needs
+   * the live origin for its @id values, and site.config.js is a build
+   * file — this is the bridge. Still one source: site.config.js.
+   */
+  define: {
+    __SPI_SITE_URL__: JSON.stringify(SITE_URL),
+    // '' when unset, which switches the tag off entirely. See
+    // src/lib/analytics.ts and docs/measurement-plan.md.
+    __SPI_GA_ID__: JSON.stringify(GA_MEASUREMENT_ID),
+  },
   server: {
     // Pinned so the local URL is stable. 5173 is taken by another
     // project on this machine.

@@ -1,5 +1,5 @@
 /**
- * Generates robots.txt and sitemap.xml from SITE_URL.
+ * Generates robots.txt, sitemap.xml and llms.txt from SITE_URL.
  *
  * Written rather than hand-maintained so the domain lives in exactly
  * one place — see site.config.js. index.html gets the same value
@@ -8,7 +8,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { ALLOW_INDEXING, SITE_URL, SITE_URL_IS_PLACEHOLDER } from '../site.config.js'
+import { ALLOW_INDEXING, SITE_URL, SITE_URL_IS_FALLBACK } from '../site.config.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PUBLIC = join(root, 'public')
@@ -72,9 +72,17 @@ if (!ALLOW_INDEXING) {
   console.log('seo: SITE_NOINDEX set — robots.txt disallows crawling and a noindex meta is injected')
 }
 
-if (SITE_URL_IS_PLACEHOLDER) {
-  console.warn(
-    `\n  ⚠  SITE_URL is unset — using the placeholder ${SITE_URL}.\n` +
-      `     Fine locally. Set SITE_URL in the environment before a real deploy.\n`,
-  )
+/*
+ * The build-breaking check that used to live here is gone, and so is
+ * the thing it guarded against.
+ *
+ * It existed because the fallback domain was a placeholder: an
+ * indexable build without SITE_URL would have pointed every canonical,
+ * Open Graph tag, JSON-LD @id and the sitemap at a domain nobody owned.
+ * The fallback is now the gym's real domain, so that build emits
+ * correct URLs and there is nothing left to fail on. A check that can
+ * only produce false positives is friction, not safety.
+ */
+if (SITE_URL_IS_FALLBACK) {
+  console.log(`seo: SITE_URL not set — using the configured default ${SITE_URL}`)
 }

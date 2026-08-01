@@ -12,6 +12,7 @@ export function MobileCtaBar() {
   return (
     <div
       data-sticky-cta
+      data-analytics-location="mobile_bar"
       className="border-hairline bg-deep/95 fixed inset-x-0 bottom-0 z-50 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm lg:hidden"
     >
       <a

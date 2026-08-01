@@ -35,10 +35,17 @@
       crossorigin
     />
 
-    <title>SPI Jiu Jitsu — Brazilian Jiu Jitsu in Port Isabel, TX | First Class Free</title>
+    <!--
+      Query first, brand second. The old title led with "SPI Jiu Jitsu",
+      which only helps people already searching the brand — and Google
+      appends the site name to homepage titles by itself now, so the
+      brand is not lost by moving it out. 57 characters, inside the
+      ~60 Google renders before truncating.
+    -->
+    <title>Brazilian Jiu Jitsu in Port Isabel, TX | First Class Free</title>
     <meta
       name="description"
-      content="Brazilian jiu jitsu classes for adults, teens, and kids in Port Isabel, Texas. Mon–Thu evenings at 134 S Shore Dr. No experience needed — your first class is free. Text (956) 667-1971."
+      content="Brazilian jiu jitsu classes for adults, women, teens, and kids in Port Isabel, Texas. Mon–Thu evenings at 134 S Shore Dr. No experience needed — your first class is free. Text (956) 667-1971."
     />
 
     <link rel="canonical" href="__SITE_URL__/" />
@@ -48,7 +55,7 @@
     <meta property="og:title" content="SPI Jiu Jitsu — Brazilian Jiu Jitsu in Port Isabel, TX" />
     <meta
       property="og:description"
-      content="Four nights a week, minutes from the causeway. Your first class is free."
+      content="Four nights a week, minutes from the causeway. First class free — no experience, nothing to sign up for."
     />
     <meta property="og:url" content="__SITE_URL__/" />
     <meta property="og:image" content="__SITE_URL__/assets/og-image.jpg" />
@@ -64,78 +71,13 @@
     <link rel="apple-touch-icon" href="/assets/spi-logo.png" />
 
     <!--
-      LocalBusiness structured data. Alongside a claimed Google
-      Business Profile this is the main lever for ranking on
-      "jiu jitsu Port Isabel" and for showing hours in the SERP.
+      All schema.org markup is rendered by
+      src/components/StructuredData.tsx and prerendered into
+      dist/index.html, so it derives from classes.ts and site.ts rather
+      than being hand-copied here. Hours that are typed out beside a
+      timetable they are supposed to match will eventually stop
+      matching it, and these hours print in the search result.
     -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SportsActivityLocation",
-        "@id": "__SITE_URL__/#gym",
-        "name": "SPI Jiu Jitsu",
-        "legalName": "SPI BJJ & Fitness LLC",
-        "alternateName": ["SPI BJJ", "SPI BJJ & Fitness LLC"],
-        "slogan": "Roll like a wave",
-        "description": "Brazilian jiu jitsu academy in Port Isabel, Texas. Adults, teens, and kids classes Monday through Thursday. United BJJ Team affiliate.",
-        "url": "__SITE_URL__/",
-        "telephone": "+19566671971",
-        "image": "__SITE_URL__/assets/og-image.jpg",
-        "logo": "__SITE_URL__/assets/spi-logo.png",
-        "priceRange": "$$",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "134 S Shore Dr",
-          "addressLocality": "Port Isabel",
-          "addressRegion": "TX",
-          "postalCode": "78578",
-          "addressCountry": "US"
-        },
-        "geo": {
-          "@type": "GeoCoordinates",
-          "latitude": 26.0737075,
-          "longitude": -97.2120742
-        },
-        "hasMap": "https://www.google.com/maps?cid=1768797045726719715",
-        "areaServed": [
-          { "@type": "City", "name": "Port Isabel" },
-          { "@type": "City", "name": "Laguna Vista" },
-          { "@type": "City", "name": "South Padre Island" },
-          { "@type": "City", "name": "Los Fresnos" }
-        ],
-        "openingHoursSpecification": [
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday", "Wednesday"],
-            "opens": "17:00",
-            "closes": "19:30"
-          },
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Tuesday", "Thursday"],
-            "opens": "17:30",
-            "closes": "19:30"
-          }
-        ],
-        "employee": {
-          "@type": "Person",
-          "name": "Thomas Trevino",
-          "jobTitle": "Head Instructor"
-        },
-        "parentOrganization": {
-          "@type": "Organization",
-          "name": "United BJJ Team",
-          "url": "https://unitedbjjteam.com"
-        },
-        "makesOffer": {
-          "@type": "Offer",
-          "name": "Free trial class",
-          "price": "0",
-          "priceCurrency": "USD",
-          "description": "First Brazilian jiu jitsu class is free for new students."
-        }
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -12,6 +12,10 @@ export function ScheduleRail({ summary }: { summary: DaySummary }) {
   return (
     <aside
       aria-label="What to expect"
+      // Distinguishes the rail's phone panel from anything else in the
+      // schedule section — it's the only CTA in there, and worth
+      // knowing about separately.
+      data-analytics-location="schedule_rail"
       className="bg-hairline border-hairline flex flex-col gap-px border"
     >
       <div className="bg-amber text-midnight flex flex-col gap-[7px] px-6 py-[22px]">

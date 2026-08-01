@@ -61,6 +61,47 @@ export const directionsHref = `https://www.google.com/maps/dir/?api=1&destinatio
 export const placeHref = `https://www.google.com/maps?cid=${PLACE.cid}`
 
 /**
+ * Off-site profiles for the same business, for JSON-LD `sameAs`.
+ *
+ * "Described the same way in several places" is weighted heavily by AI
+ * answer engines and by Google's entity resolution — this is worth far
+ * more than its size suggests. Add the gym's Facebook and Instagram
+ * URLs here and they flow into the structured data automatically.
+ *
+ * Only verified URLs belong here. A guessed profile link is worse than
+ * an absent one: `sameAs` asserts "this is the same entity", so a wrong
+ * URL actively tells Google the gym is somebody else.
+ */
+/**
+ * The gym's social accounts, as visible links.
+ *
+ * Supplied by the gym 2026-08-01. The Facebook entry is a share link
+ * rather than the page's own address — the tracking query string it
+ * arrived with has been dropped, since a `sameAs` carrying someone's
+ * click-attribution parameters is not a clean identity claim. Swap it
+ * for the canonical facebook.com/<pagename> URL when that's to hand.
+ *
+ * Instagram leads: for a gym it's the account people actually check
+ * before deciding to walk in.
+ */
+export const SOCIAL_LINKS = [
+  { label: 'Instagram', href: 'https://www.instagram.com/spijiujitsu' },
+  { label: 'Facebook', href: 'https://www.facebook.com/share/1BZw6GmxyB/' },
+] as const
+
+/**
+ * The same accounts as bare URLs, for JSON-LD `sameAs`.
+ *
+ * Derived from SOCIAL_LINKS rather than listed again — a profile that
+ * search engines are told about but visitors can't reach is the bug
+ * this file just had.
+ */
+export const SOCIAL_PROFILES: readonly string[] = [
+  placeHref,
+  ...SOCIAL_LINKS.map((link) => link.href),
+]
+
+/**
  * The "A room with a scoreboard" band. Stays false until the gym
  * supplies verified season results — the numbers below are the
  * design's placeholders and have never been confirmed.

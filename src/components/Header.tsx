@@ -5,6 +5,7 @@ import { onAnchorClick } from '../lib/anchors'
 const NAV = [
   { href: '#schedule', label: 'Schedule' },
   { href: '#programs', label: 'Programs' },
+  { href: '#women', label: 'Women' },
   { href: '#kids', label: 'Kids' },
   { href: '#coach', label: 'About' },
 ] as const
@@ -201,6 +202,10 @@ export function Header() {
         <div
           ref={panelRef}
           id={menuId}
+          // Both navs live inside <header>; without this they'd be
+          // indistinguishable in reports, and "does the mobile menu get
+          // used" is one of the questions worth answering.
+          data-analytics-location="mobile_menu"
           className="border-hairline bg-deep border-t px-5 pt-2 pb-5 sm:px-8 lg:hidden"
         >
           <nav aria-label="Sections" className="flex flex-col">

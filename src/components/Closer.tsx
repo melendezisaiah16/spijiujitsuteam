@@ -3,7 +3,12 @@ import { SITE, smsHref } from '../data/site'
 
 export function Closer() {
   return (
-    <section className="bg-deep flex flex-col items-center gap-5 px-5 py-16 text-center sm:px-8 lg:px-12 lg:py-[84px]">
+    <section
+      // No id — it isn't an anchor target — so it needs naming for
+      // reports, and this is the last CTA before the footer.
+      data-analytics-location="closer"
+      className="bg-deep flex flex-col items-center gap-5 px-5 py-16 text-center sm:px-8 lg:px-12 lg:py-[84px]"
+    >
       {/* The school's tagline. Sand rather than amber — amber is
           reserved for the free-class signal. */}
       <p className="text-sand m-0 flex items-center gap-3 font-mono text-[11px] tracking-[0.28em] uppercase sm:gap-4">

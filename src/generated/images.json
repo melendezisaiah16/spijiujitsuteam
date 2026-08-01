@@ -21,6 +21,17 @@
     "height": 1020,
     "aspectRatio": 2.0225
   },
+  "kids-podium": {
+    "widths": [
+      480,
+      720,
+      960,
+      1150
+    ],
+    "width": 1150,
+    "height": 760,
+    "aspectRatio": 1.5132
+  },
   "kids-class": {
     "widths": [
       480,
@@ -29,18 +40,19 @@
       1440
     ],
     "width": 1440,
-    "height": 950,
-    "aspectRatio": 1.5158
+    "height": 440,
+    "aspectRatio": 3.2727
   },
-  "kids-pair": {
+  "women-hand-raised": {
     "widths": [
       480,
       720,
-      868
+      960,
+      1148
     ],
-    "width": 868,
-    "height": 330,
-    "aspectRatio": 2.6303
+    "width": 1148,
+    "height": 1200,
+    "aspectRatio": 0.9567
   },
   "coach-thomas": {
     "widths": [

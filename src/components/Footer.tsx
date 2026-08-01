@@ -1,4 +1,4 @@
-import { SITE } from '../data/site'
+import { SITE, SOCIAL_LINKS } from '../data/site'
 
 export function Footer() {
   return (
@@ -12,14 +12,40 @@ export function Footer() {
       </div>
 
       {/*
-        The year is read at render. That means the build bakes the
-        build-year into the prerendered HTML and the browser corrects
-        it on hydration — suppressHydrationWarning covers the one
-        night a year those disagree. Nothing to remember to update.
+        row-reverse at sm so the accounts sit right and the copyright
+        left, while stacked on a phone the accounts come first — they
+        are the useful half of this row and shouldn't land underneath
+        the legal boilerplate.
       */}
-      <p className="border-hairline m-0 border-t pt-4 text-center" suppressHydrationWarning>
-        © {new Date().getFullYear()} {SITE.name} Team. All Rights Reserved.
-      </p>
+      <div className="border-hairline flex flex-col items-center gap-1 border-t pt-2 sm:flex-row-reverse sm:justify-between sm:pt-3">
+        <nav aria-label="Social media" className="flex items-center gap-6">
+          {SOCIAL_LINKS.map((link) => (
+            // 44px hit area on the anchor, rule on the inner span — the
+            // same split as the map links, so the underline stays with
+            // the text instead of drifting below it.
+            <a
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-sand inline-flex min-h-11 items-center transition-colors"
+            >
+              <span className="border-hairline border-b pb-0.5">{link.label} →</span>
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          ))}
+        </nav>
+
+        {/*
+          The year is read at render. That means the build bakes the
+          build-year into the prerendered HTML and the browser corrects
+          it on hydration — suppressHydrationWarning covers the one
+          night a year those disagree. Nothing to remember to update.
+        */}
+        <p className="m-0 text-center" suppressHydrationWarning>
+          © {new Date().getFullYear()} {SITE.name}. All rights reserved.
+        </p>
+      </div>
     </footer>
   )
 }

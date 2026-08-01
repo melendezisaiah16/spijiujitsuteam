@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { track } from '../lib/analytics'
 import {
   ALL_DAYS,
   beginnerClass,
@@ -26,8 +27,8 @@ export interface DayTab {
  *
  * This used to be a "recommendation" resolved in priority order:
  * beginner class, else kids class, else first class. Every night has a
- * beginner-friendly adults class, so the first branch always won and
- * the panel was frozen on "Adults" — a recommender that could only
+ * beginner-friendly teens-and-adults class, so the first branch always
+ * won and the panel was frozen on it — a recommender that could only
  * ever recommend one thing, next to a row already saying the same.
  *
  * It now carries what genuinely differs between nights: gi or no-gi,
@@ -60,6 +61,14 @@ export interface Schedule {
 export function useSchedule(): Schedule {
   const today = useToday()
   const [selected, setSelected] = useState<Day | null>(null)
+
+  // Which night people research is a genuinely operational number —
+  // it feeds staffing and which class is worth promoting. Tracked here
+  // rather than in DayTabs so keyboard navigation counts too.
+  const selectDay = useCallback((day: Day) => {
+    setSelected(day)
+    track('schedule_day_select', { day, class_count: classesFor(day).length })
+  }, [])
 
   // A tab the visitor picked always wins. Otherwise fall back to
   // today, and to Monday when the gym is closed.
@@ -94,7 +103,7 @@ export function useSchedule(): Schedule {
         ? `${classCount(classes.length)} · first at ${first.time}`
         : classCount(classes.length),
       // Names the beginner class from the data rather than repeating
-      // "6:30 adults" in prose, which would go stale silently.
+      // "6:30 teens and adults" in prose, which would go stale silently.
       note: beginner
         ? `No experience needed — ${beginner.name} at ${beginner.time} takes beginners any night.`
         : 'No experience needed on any night.',
@@ -106,6 +115,6 @@ export function useSchedule(): Schedule {
       ? `Closed today — ${count} ${day} · tap a day to switch`
       : `${count}${isToday ? ' today' : ` ${day}`} · tap a day to switch`
 
-    return { day, setDay: setSelected, today, tabs, classes, summary, dayNote }
-  }, [day, today])
+    return { day, setDay: selectDay, today, tabs, classes, summary, dayNote }
+  }, [day, today, selectDay])
 }

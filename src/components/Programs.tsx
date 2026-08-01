@@ -86,29 +86,32 @@ export function Programs() {
           id="programs-heading"
           className="font-display text-display-sm m-0 font-extrabold uppercase"
         >
-          Who's training?
+          Find your class.
         </h2>
         <p className="text-muted m-0 max-w-[340px] text-base leading-[1.65]">
-          Two programs — adults and kids. Both start with a free class.
+          Two programs — teens and adults, and kids. Both start with a free class.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <ProgramCard
           tone="blue"
-          title="Adults"
-          sub="16+ · no experience needed"
+          title="Teens & adults"
+          sub="13+ · no experience needed"
           photo="adults-training"
           photoAlt="Adults drilling in gi on the mat during an evening class."
-          body="For anyone who wants to start jiu jitsu in Port Isabel. Complete beginners, people training a couple of nights a week to stay sharp, and competitors all work from the same class and toward their own goals. Turn up on any night — no experience, nothing to sign up for."
+          body="Complete beginners, people training a couple of nights a week to stay sharp, and competitors all work from the same class toward their own goals. Teens move up from about thirteen, depending on their size — text us and we'll tell you which one fits. Turn up any night."
         />
         <ProgramCard
           tone="sand"
-          title="Kids & teens"
-          sub="Ages 4–15 · grouped by age"
-          photo="kids-pair"
-          photoAlt="Two kids in gi drilling together on the mat."
-          body="Little Ninjas is where four to six-year-olds start. We keep it to the very basics and build the balance, focus and confidence that come with them — they're growing up as much as they're learning a martial art. From seven, Kids & Teens picks up where that leaves off and goes properly into the art itself."
+          title="Kids"
+          sub="Ages 4–12 · grouped by age"
+          photo="kids-class"
+          // "their coach", singular: the card's letterbox trims the two
+          // adults standing at the ends of the line at most widths, so
+          // only the coach kneeling in the middle is reliably in frame.
+          photoAlt="The SPI Jiu Jitsu kids class lined up across the mat with their coach."
+          body="Little Ninjas is where four to six-year-olds start — the very basics, and the balance, focus and confidence that come with them. They're growing up as much as they're learning a martial art. From seven, Big Kids goes properly into the art itself, until they're ready to move up with the teens and adults."
         />
       </div>
     </section>

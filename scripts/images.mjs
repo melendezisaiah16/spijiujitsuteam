@@ -41,22 +41,56 @@ const IMAGES = [
     widths: [480, 720, 960, 1440],
   },
   {
+    id: 'kids-podium',
+    src: 'kids-podium.jpg',
+    // Cropped to the SPI athlete alone, at 1.51:1 to match the #kids
+    // slot almost exactly. Two reasons beyond composition: the full
+    // frame carries two children from other academies, who are not
+    // ours to publish — and the untrimmed banner reads "SAVAGE" in
+    // graffiti behind a section whose copy promises no yelling.
+    crop: { left: 470, top: 180, width: 1150, height: 760 },
+    widths: [480, 720, 960, 1150],
+  },
+  /*
+   * kids-mat.jpg is still in assets/photos/ but no longer built. Its
+   * crop held the Kids card until the class line-up took the slot.
+   */
+  {
     id: 'kids-class',
     src: 'kids-class.jpg',
-    // Trim ceiling and a third of the empty floor. The kids sit in a
-    // band across the middle; at the section's near-4:3 slot the
-    // untrimmed frame leaves them stranded above a lot of bare mat.
-    crop: { left: 0, top: 60, width: 1440, height: 950 },
+    // The class lined up, trimmed to the band from heads to feet —
+    // 3.27:1, which is what the card's letterbox actually wants. A row
+    // of people is a horizontal composition; the drilling pair that
+    // used to hold this slot was a square subject in a 3:1 hole, so it
+    // rendered as an empty grey mat with two kids pushed into the
+    // right third and a stranger's head cropped at the left edge.
+    crop: { left: 0, top: 262, width: 1440, height: 440 },
     widths: [480, 720, 960, 1440],
   },
+  /*
+   * kids-hand-raised.jpg is in assets/photos/ but deliberately not
+   * built. Tried in the programs card and pulled: at 640px wide it had
+   * to be cropped to 425 and stretched to ~660 in a 3:1 letterbox,
+   * which decapitated the coach, shrank the child to a sixth of the
+   * frame and went visibly soft beside a sharp neighbour.
+   *
+   * It fits the #kids section slot (1.50:1 source, ~1.57:1 slot, almost
+   * no upscale) — but the women's section directly above it is already
+   * a hand-being-raised photograph, and two of those in consecutive
+   * full-width sections reads as repetition rather than as a motif.
+   *
+   * Revisit when the camera original arrives. See README.
+   */
   {
-    id: 'kids-pair',
-    src: 'kids-mat.jpg',
-    // Two kids drilling on the right of the wide room shot. The full
-    // frame reads as "a room", which the Kids card can't afford at
-    // 220px tall — and the wide version is already the adults card.
-    crop: { left: 1180, top: 930, width: 868, height: 330 },
-    widths: [480, 720, 868],
+    id: 'women-hand-raised',
+    src: 'women-hand-raised.jpg',
+    // The uncropped frame is 1.5:1 with the referee dead centre, and
+    // the section's slot is portrait — object-cover threw away both
+    // athletes and left a section about women showing a man's back.
+    // Cropped to the raised hand and the SPI patch, at ~0.96:1 so the
+    // slot barely has to crop it at all.
+    crop: { left: 900, top: 60, width: 1148, height: 1200 },
+    widths: [480, 720, 960, 1148],
   },
   {
     id: 'coach-thomas',

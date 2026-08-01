@@ -40,24 +40,34 @@ links only actually do anything on a device with a messaging app.
 | `npm run build`     | Typecheck → client build → SSR build → prerender into `dist/` |
 | `npm run preview`   | Serve the built `dist/` on :5183 — use this to check the prerender |
 | `npm run typecheck` | TypeScript only                                             |
-| `npm test`          | Playwright: interaction, accessibility, and image checks    |
+| `npm test`          | Playwright: interaction, accessibility, image and analytics checks |
 | `npm run screenshots` | Full-page captures at 11 widths into `screenshots/`       |
 
 ## The schedule
 
-Confirmed with Thomas on 2026-07-26. Ten classes, Mon–Thu.
+Confirmed with Thomas on 2026-07-26; age bands revised 2026-07-31.
+Ten classes, Mon–Thu.
 
 | | Mon | Tue | Wed | Thu |
 | --- | --- | --- | --- | --- |
 | **Little Ninjas** (4–6) | 5:00–5:30p | — | 5:00–5:30p | — |
-| **Kids & Teens** (7–15) | 5:30–6:15p | 5:30–6:15p | 5:30–6:15p | 5:30–6:15p |
-| **Adults** (16+) | 6:30p | 6:30p | 6:30p | 6:30p |
+| **Big Kids** (7–12) | 5:30–6:15p | 5:30–6:15p | 5:30–6:15p | 5:30–6:15p |
+| **Teens & Adults** (13+) | 6:30p | 6:30p | 6:30p | 6:30p |
 | **Uniform** | Gi | No-gi | Gi | No-gi |
 
-Closed Fri–Sun. Everything on the page — day tabs, class counts, the
-rail panel, the "what to bring" line, the visit strip, and the
-JSON-LD opening hours — derives from `src/data/classes.ts`. Adults have
-no published end time; add `end:` to those rows if the gym sets one.
+Closed Fri–Sun. 13+ is a guide rather than a cutoff — where a teen
+trains also depends on their size, so the programs copy says so instead
+of stating a hard line the gym has to walk back at the door.
+
+Everything on the page — day tabs, class counts, the rail panel, the
+"what to bring" line, the visit strip, and the JSON-LD opening hours —
+derives from `src/data/classes.ts`. Teens & Adults has no published end
+time; add `end:` to those rows if the gym sets one.
+
+The doors close at **21:00** (`CLOSES_AT`, confirmed 2026-08-01) — later
+than the last class starts, which is why closing time is stated rather
+than inferred from the timetable. Opening times still derive from the
+first class of each night.
 
 ## Tests
 
@@ -67,7 +77,7 @@ npx playwright test tests/a11y.spec.ts     # accessibility only
 npm run screenshots                        # regenerate the review set
 ```
 
-60 tests, all passing:
+75 tests, all passing:
 
 - **Interaction** — day tabs re-render the list, arrow keys/Home/End
   move between them, the rail panel renders something distinct for each
@@ -128,7 +138,7 @@ runs are no-ops and the dev server's watcher stays quiet.
 | --- | --- |
 | `npm run fonts` | `public/fonts/` — Latin woff2 + OFL licences, from the fontsource packages |
 | `npm run brand` | `public/assets/spi-logo.png` (180px), `og-image.jpg` (1200×630) |
-| `npm run seo` | `public/robots.txt`, `public/sitemap.xml` |
+| `npm run seo` | `public/robots.txt`, `public/sitemap.xml` (plus `dist/llms.txt` at build) |
 | `npm run images` | `public/img/` — responsive AVIF/WebP/JPEG |
 
 The fonts used to be four committed binaries of unrecorded origin; now
@@ -195,6 +205,19 @@ lines, no extra dependency). The deployed HTML contains the headline,
 the full schedule, the address and the instructor bio in the first
 response — what a Next.js static export would produce.
 
+### The default domain is the real one
+
+`site.config.js` falls back to `https://spijiujitsuteam.com` — the
+gym's actual domain, confirmed 2026-08-01 — so a build without a
+`SITE_URL` environment variable still emits correct canonicals rather
+than pointing somewhere nobody owns.
+
+A build-breaking check briefly lived here, from when that fallback was
+a placeholder. It's gone with the problem it guarded: a check that can
+only produce false positives is friction, not safety. `SITE_URL` is
+still what `.do/app.*.yaml` supplies, so a domain change stays a
+platform setting rather than a code change.
+
 ### The domain lives in one place
 
 `site.config.js` exports `SITE_URL`. A Vite plugin substitutes
@@ -212,11 +235,21 @@ ship a placeholder on launch day.
 - `title`, `description`, canonical, Open Graph, Twitter card
 - A 1200×630 `og:image` built from the hero frame (`scripts/brand.mjs`).
   It previously pointed at the square logo, which link previews crop badly
-- `SportsActivityLocation` JSON-LD: address, `geo`, `hasMap`,
-  per-day hours, `legalName`/`alternateName` matching the Google
-  Business Profile, `areaServed`, the free-trial `Offer`
-- `robots.txt` + `sitemap.xml`
+- JSON-LD as a connected `@graph`, not one isolated node: `WebSite` →
+  `WebPage` → `SportsActivityLocation`/`SportsClub` → `Person`, wired by
+  `@id`. Address, `geo`, `hasMap`, `sameAs`, per-day hours,
+  `legalName`/`alternateName` matching the Google Business Profile,
+  `areaServed`, the free-trial `Offer`
+- A second `FAQPage` block, rendered by `src/components/Faq.tsx` from
+  the same array as the visible answers and prerendered into the static
+  HTML — never injected client-side, which most AI fetchers never see
+- `robots.txt` + `sitemap.xml` + `llms.txt`
 - Semantic heading order, alt text on every photo
+- **The whole week in the first response.** All four day panels render;
+  the three that aren't selected carry `hidden`. Previously only the
+  selected day was in the tree, so the deployed HTML contained Monday
+  and nothing else — three quarters of the timetable existed only as
+  the result of a click, invisible to anything that reads raw HTML
 - Core Web Vitals, measured on the production build:
 
 | | Unthrottled | Fast 3G + 4× CPU |
@@ -246,6 +279,53 @@ Ranking for "jiu jitsu Port Isabel" is mostly won off the site:
 4. **Search Console + analytics** — not installed. Without them none of
    this is measurable.
 
+### AEO / GEO — being cited, not just ranked
+
+Answer engines lift *passages*, not pages, and most of their fetchers
+read raw HTML without executing JavaScript. Two things follow, and both
+are already true here: the page is prerendered, and the copy is written
+in answers rather than atmosphere.
+
+The `#faq` section is the deliberate part. Seven questions, each
+answered in the first sentence, each self-contained enough to survive
+being quoted with no surrounding context — which is why the answers
+name "SPI Jiu Jitsu" and state the phone number rather than saying "we"
+and "us". `src/data/faq.ts` is the single source for both the visible
+section and the `FAQPage` markup; marking up a question that isn't on
+the page is a structured-data violation, so they must not diverge.
+
+It renders as a native `<details>`/`<summary>` accordion. An earlier
+version refused to collapse, on the theory that hidden answers count
+for less — over-cautious. Collapsed `<details>` content is in the DOM
+and in the prerendered HTML, which is what crawlers and AI fetchers
+read, and a test asserts exactly that by matching every marked-up
+answer against the section's `textContent` while most rows are shut.
+Native disclosure also arrives keyboard-operable, announced correctly,
+and working without JavaScript — all things a hand-rolled accordion
+has to reimplement and usually gets wrong.
+
+`llms.txt` is written to `dist/` by `scripts/prerender.mjs` from the
+same schedule and FAQ modules. Treat it as an **emerging convention,
+not a standard** — it is cheap and carries no downside, but nothing has
+established that anything ranks or cites differently because of it.
+Don't let anyone sell it to you as a ranking factor.
+
+`robots.txt` currently allows every crawler, including `GPTBot`,
+`ClaudeBot`, `PerplexityBot`, `Google-Extended` and `CCBot`. That is a
+deliberate policy position, not an oversight: blocking them protects
+content from training use but also removes the site from the answers
+those assistants generate. For a gym that wants to be recommended when
+someone asks an assistant for jiu jitsu near South Padre Island, being
+readable is the point. Revisit only if the gym's view changes.
+
+Measurement here is genuinely fuzzier than classic SEO — there are no
+rank positions. What can be done: watch analytics for referrals from
+assistant hosts, watch server logs for the AI user agents above, and
+periodically ask the major assistants "where can I train jiu jitsu near
+South Padre Island?" to see whether the site is cited and whether the
+answer is accurate. Anyone quoting precise numbers for this channel is
+guessing.
+
 ### Known limits
 
 - **One page caps long-tail reach.** A competitor with separate adults,
@@ -263,6 +343,78 @@ Ranking for "jiu jitsu Port Isabel" is mostly won off the site:
 If it were read during render, the build would bake whatever day the build ran
 on into the static HTML. First paint shows Monday; the real day lands on
 hydration.
+
+## Analytics
+
+GA4, with the measurement plan in **[docs/measurement-plan.md](docs/measurement-plan.md)** —
+the event table, the GA4 property setup checklist, the funnel to build,
+and an honest list of what the data cannot tell you. Read that before
+trusting a number.
+
+### Switching it on
+
+The property is live: measurement ID `G-62T44XVCE1`, already set in
+`.do/app.prod.yaml` alongside `SITE_URL`. To reproduce a production
+build locally:
+
+```bash
+GA_MEASUREMENT_ID=G-62T44XVCE1 npm run build
+```
+
+Don't make that a habit — it writes into the real property. **Unset is a
+first-class state**: no tag is fetched and nothing leaves the browser,
+which is what dev and preview builds want. A malformed ID throws rather
+than silently disabling — a typo otherwise looks exactly like working
+analytics until someone asks why the reports are empty a month later.
+
+### Seven events, and the decision each one drives
+
+| Event | Drives |
+| --- | --- |
+| `cta_text_click` | **The conversion.** Which CTA placement earns contact. |
+| `outbound_click` | Directions clicks — the strongest non-contact intent signal. |
+| `section_view` | Which sections are ever reached. |
+| `scroll_depth` | Is the page too long. |
+| `schedule_day_select` | Which night people research → staffing, promotion. |
+| `faq_open` | What people are unsure about before committing. |
+| `nav_click` | Whether the nav earns its place. |
+
+The brief was "track everything". That was pushed back on, and the
+reasoning is in the plan: every extra event dilutes the reports and
+makes the numbers that matter harder to find. An event earns its place
+only if a decision changes based on it.
+
+### Two design decisions worth knowing
+
+**Clicks are delegated, and location comes from the DOM.** One listener
+on `document`; a CTA's `cta_location` is resolved from its nearest
+`section[id]`, or an explicit `data-analytics-location` for the few
+places the DOM can't name (the sticky bar, the mobile menu, the hero,
+the closer, the schedule rail). A button added anywhere is therefore
+instrumented the moment it exists — nobody has to remember to tag it,
+which is how hand-tagged analytics always rots.
+
+**The tag is deferred to browser idle** (or the first interaction,
+whichever lands first) to protect an LCP measured at 2292 ms on Fast 3G
+against a 90 KB script. The cost: someone who leaves within a second or
+two is never counted, so sessions read a little low and engagement
+quality a little high. Deliberate, and written up in the plan.
+
+### The FAQ event is measured from a click, not a toggle
+
+`<details>` fires `toggle` on hydration for the item that renders open.
+Bound to `onToggle`, `faq_open` logged an open nobody performed in every
+single session, and question one would have looked permanently the most
+asked — corrupting the exact diagnostic the event exists for. It is
+measured from the summary's click instead, where `open` still holds its
+pre-toggle value. Keyboard is covered: `<summary>` synthesises a click
+for Enter and Space. A test pins this.
+
+### No personal data, ever
+
+Names, phone numbers and email addresses in GA are a Terms of Service
+violation that gets properties deleted, not warned. A test asserts no
+event payload matches a phone or email pattern.
 
 ## Security
 
@@ -341,7 +493,8 @@ only inline block is `application/ld+json`, which is data.
 ### Not a code issue, but the highest-impact risk
 
 **The site publishes identifiable photographs of children.** Two of the
-five images are of the kids class. Confirm the gym holds photo releases
+six images are of children, and the kids card is now a close crop of
+one child's face at a tournament. Confirm the gym holds photo releases
 from every parent whose child is recognisable, and that they cover web
 use. This is worth more attention than anything above.
 
@@ -417,6 +570,8 @@ src/
   hooks/useToday.ts     Current day, or null Fri–Sun
   hooks/useSchedule.ts  All derived state: tabs, class list, day summary, note
   components/           One file per section, in page order
+  data/faq.ts           The seven answers — feeds the #faq section AND its JSON-LD
+  components/StructuredData.tsx  All schema.org markup, derived from the two files above
   components/Picture.tsx  Responsive <picture> over the generated derivatives
   generated/images.json   Written by the photo pipeline — don't edit by hand
   index.css             Design tokens (@theme) — every colour and type size
@@ -426,6 +581,9 @@ Two files cover almost all routine edits:
 
 - **Class times change** → `src/data/classes.ts`
 - **Phone, address, instructor** → `src/data/site.ts`
+- **A social profile, or real pricing** → `SOCIAL_PROFILES` / `PRICING`
+  in `src/data/site.ts`. Both flow straight into the JSON-LD and (for
+  pricing) the FAQ — one line each, no markup to hand-edit.
 
 Everything else — the day tabs, class counts, the rail panel, the
 "3 classes today" note, the SMS deep links, the JSON-LD hours — derives from
@@ -546,9 +704,9 @@ horizontally — measured −72px at 1440).
 
 The handoff specced the amber rail panel as a recommendation resolved
 in priority order: a beginner class if one runs that day, else a kids
-class, else the first class. With the real schedule the adults class is
-beginner-friendly on all four nights, so the first branch always won —
-the panel was permanently stuck on "Adults" and the other three
+class, else the first class. With the real schedule the teens-and-adults
+class is beginner-friendly on all four nights, so the first branch
+always won — the panel was permanently stuck on it and the other three
 branches were unreachable. It also repeated the "beginners welcome" row
 sitting immediately to its left.
 
@@ -563,9 +721,48 @@ four days render a distinct panel.
 design's placeholders and were never verified. **Do not flip that flag until
 the gym supplies real season results.**
 
+### 10. The women's section
+
+`#women` is not in the handoff. It sits between the programs cards and
+the kids section, and it exists because a woman deciding whether to
+walk into a grappling gym is weighing a different set of questions than
+anyone else on the page, and none of the other sections answer them.
+
+Two things about it are load-bearing:
+
+**It argues from the art, not from adjectives.** Jiu jitsu assumes the
+other person is bigger and stronger — that is a property of the art and
+safe to state. "Empowering", "supportive" and "safe space" are what
+every gym writes and none of them survive contact with a first night.
+The section says concrete things instead, which is also why they have
+to be true.
+
+**Some of those concrete things are gym policy, not facts we can
+verify from the outside** — see "Still open with the client". They sit
+in `assurances()` in `src/components/Women.tsx`, deliberately together
+in one place so Thomas can confirm or correct them at once. A woman who
+reads "you spar when you decide to" and then gets pushed into sparring
+on her first night is worse off than if the page had said nothing, so
+this is not a claim to leave unconfirmed.
+
+The first row of that list — the class name, days and time — is the
+exception: it derives from `classes.ts` and can't drift. Facts belong
+in the list, not in the paragraphs. An earlier draft opened the second
+paragraph with "You'd train in Teens & Adults at 6:30p", which put a
+scheduling detail where the persuasion should be and pushed the
+argument further down the page.
+
+The photograph needed a crop of its own. The original is a 1.5:1
+tournament frame with the referee dead centre; dropped into the
+section's portrait slot, `object-cover` kept the middle and produced a
+section about women showing a man's back. It's now cropped hard right
+to the raised hand and the SPI patch, at ~0.96:1, and the slot is
+taller on mobile than the other section photos so the letterbox takes
+its cut out of the spectators rather than off the top of the hand.
+
 ## Photography
 
-All five slots are filled with real photos. Originals live in
+All six slots are filled with real photos. Originals live in
 `assets/photos/`; `scripts/images.mjs` turns them into responsive AVIF +
 WebP + JPEG derivatives in `public/img/` (gitignored, regenerated before
 `dev` and `build`).
@@ -573,10 +770,56 @@ WebP + JPEG derivatives in `public/img/` (gitignored, regenerated before
 | Slot | Source | Notes |
 | --- | --- | --- |
 | Hero | `recon-spi-united-group` | Low-light team shot with the belt. Dark floor sits under the headline. |
-| Adults card | `carlos-seminar-rolls` | Gi drilling. |
-| Kids card | `carlos-seminar-group-1` | Cropped to the two kids drilling on the right. |
-| Kids section | `holly-kids-class` | The kids class with its coaches. |
+| Teens & adults card | `carlos-seminar-rolls` | Gi drilling. |
+| Kids card | `kids-class` | The class lined up, trimmed to a 3.27:1 band. |
+| Kids section | `kids-podium` | Top step of the podium. Cropped to the SPI athlete alone. |
+| Women section | `women-hand-raised` | Hand raised after a tournament win. Cropped hard right — see below. |
 | Coach | `thomaas-coaching` | Thomas cornering a student; cropped in the pipeline. |
+
+### The two tournament photos, and the one that isn't used
+
+The `#kids` section is the podium shot (`kids-podium`), cropped to the
+SPI athlete alone. Two reasons beyond composition: the full frame
+carries two children from other academies, who are not the gym's to
+publish — and the untrimmed banner reads "SAVAGE" in graffiti behind a
+section whose copy promises no yelling. Cropped to 1.51:1, it lands in
+the ~1.57:1 slot almost uncropped, and at 2048px wide the source
+downscales rather than stretching.
+
+It replaced `kids-class`, the class lined up with its coaches — a
+documentary group shot where the headline ("Confidence they can't be
+talked out of") asks for one face. `kids-class` did not leave the site;
+it moved to the Kids **card**, which suits it far better. A row of
+people is a horizontal composition and that card is a ~3:1 letterbox,
+so trimming the line-up to the band from heads to feet (3.27:1) fills
+the slot with no dead space.
+
+What it displaced there was `kids-mat` — two kids drilling, a square
+subject in a 3:1 hole. Cropped to fit, it rendered as a field of empty
+grey mat with the pair pushed into the right third and a stranger's
+head cut off at the left edge. The lesson generalises: **match the
+subject's natural composition to the slot's aspect** before reaching
+for a crop. `kids-mat.jpg` is still in `assets/photos/`, unused.
+
+Between them the two kids photographs now split the work: the card says
+"here is the class", the section says "here is what it does for one of
+them".
+
+**Known deviation:** the banner behind her is red, which is not in the
+Isla Noche palette and is the most saturated thing on the page. It was
+accepted, not overlooked — a smiling child on a podium is the strongest
+image a kids programme can show a parent, and the gold gi trim happens
+to sit close to the amber. If the palette discipline matters more than
+the photograph, `kids-class` is one entry away.
+
+`assets/photos/kids-hand-raised.jpg` is a third tournament photo, not
+used. It was tried in the Kids card and pulled: the card is a ~3:1
+letterbox and the photograph is a vertical moment — an arm going up.
+Cropping to that shape decapitated the coach and shrank the child to a
+sixth of the frame, and at 640px wide it went visibly soft beside a
+sharp neighbour. It fits the #kids slot, but the podium shot is better
+there and the women's section above is already a hand-being-raised
+photograph.
 
 ### Adding or changing a photo
 
@@ -659,15 +902,69 @@ The gym logo is at `public/assets/spi-logo.png`.
   content twice. The cards describe what each program is like.
 - **Every CTA sends the same generic message.** `SMS_BODY` in
   `src/data/site.ts`, one value, used by all of them.
+- **The women's section promises nothing the gym hasn't agreed to.** It
+  earns its place by being specific, which means every specific in it
+  has to hold on a Tuesday night. If a claim can't be confirmed, cut it
+  rather than softening it into the usual adjectives — vague copy is
+  useless there, but wrong copy is worse than useless.
+- **"One class" is the motif, and it recurs on purpose.** The hero
+  offers it, the coach section opens with Thomas taking one in 2020,
+  and it closes the same section: "It starts the way his did: one
+  class." His origin story and the reader's offer are the same thing —
+  that's the page's one piece of real persuasion, so don't paraphrase
+  it into "a day on the mat" or "a trial session" and break the echo.
+- **Headlines carry the argument, not the body copy.** The hero H1 was
+  "Train jiu jitsu in Port Isabel" and the programs H2 was "Who's
+  training?" — a label and a rhetorical question, in the two largest
+  type sizes on the page, while every persuasive line sat in 17px body
+  text. Both are imperatives now. If a headline here can be swapped for
+  a section label without losing anything, it isn't earning its size.
+- **No age is a hard cutoff.** 13+ for teens and adults is a guide;
+  where a teen trains also depends on size. Copy that states the band
+  should leave room for the gym to place them.
 
 ## Still open with the client
 
 1. **What a first-timer wears on a gi night.** The rail currently says
    "text us about what to wear" because the gym doesn't lend gis and we
    don't know the actual answer. One sentence from Thomas replaces it.
-2. Real season results, before the record band can be enabled.
-3. **A gi portrait of Thomas** — see Photography.
-4. **Is "purple belt" still current?** It came from the handoff's
+2. **The assurances in the women's section.** `assurances()` in
+   `src/components/Women.tsx` states that a visitor may watch a class
+   instead of training, that nobody is put into sparring before they
+   choose to, and that Thomas is on the mat every class. The last is
+   established elsewhere on the site; the first two are normal gym
+   practice but were written by us, not confirmed by the gym. **Get a
+   yes on both, or cut them.** They are the reason the section is worth
+   anything, and the reason it could do harm if it's wrong.
+   The body copy also says nobody will "throw you in with the biggest
+   guy in the room" on a first night — same question, same answer
+   needed.
+3. **Whether the athlete in the tournament photo is happy to be the
+   face of that section.** She's identifiable. The site already needs
+   photo releases for the kids images; this is the same question for an
+   adult who can answer it herself.
+4. **A canonical Facebook URL.** `SOCIAL_PROFILES` in
+   `src/data/site.ts` currently carries the share link the gym
+   supplied (`facebook.com/share/1BZw6GmxyB/`) with its tracking query
+   string stripped. That resolves, but `sameAs` is an identity claim
+   and a share redirect is a weaker one than `facebook.com/<pagename>`.
+   Swap it when the page's own address is to hand.
+
+5. **The camera original of the tournament photo.** The supplied file is
+   640px wide, which is why it isn't on the site — see Photography,
+   "The tournament photo that isn't used". Drop the full-resolution
+   version over `assets/photos/kids-hand-raised.jpg` and it's worth
+   another look, though its shape still argues against the Kids card.
+6. Real season results, before the record band can be enabled.
+7. **A gi portrait of Thomas** — see Photography.
+8. **Is "purple belt" still current?** It came from the handoff's
    verified-data section, but ranks change and it's now only in the
    lineage block.
-5. The live domain, for the canonical/OG/JSON-LD URLs.
+
+Answered 2026-08-01 and now in the code: the live domain
+(`spijiujitsuteam.com`), the Instagram and Facebook profiles, the 21:00
+closing time, and membership pricing — which the gym deliberately does
+not publish, because Thomas goes through the options with people in
+person. The FAQ says exactly that rather than deflecting with "text us
+for rates", and there is no membership `Offer` in the structured data
+for Google to render a price from.

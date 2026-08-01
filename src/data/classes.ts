@@ -2,11 +2,15 @@
  * The class schedule. Ten classes, Mon–Thu, closed Fri–Sun.
  * This is the only place the gym's timetable lives.
  *
- * Confirmed with Thomas, 2026-07-26:
- *   Little Ninjas  Mon & Wed  5:00–5:30p   (ages 4–6)
- *   Kids & Teens   Mon–Thu    5:30–6:15p   (ages 7–15)
- *   Adults         Mon–Thu    6:30p        (16+)
+ * Confirmed with Thomas, 2026-07-26; age bands revised 2026-07-31:
+ *   Little Ninjas    Mon & Wed  5:00–5:30p   (ages 4–6)
+ *   Big Kids         Mon–Thu    5:30–6:15p   (ages 7–12)
+ *   Teens & Adults   Mon–Thu    6:30p        (13+)
  *   Gi on Mon & Wed, no-gi on Tue & Thu.
+ *
+ * 13+ is the guide, not a rule — which class a teen trains in also
+ * depends on their size, so the copy says so rather than turning the
+ * band into a promise the gym then has to break at the door.
  */
 
 export type Day = 'Mon' | 'Tue' | 'Wed' | 'Thu'
@@ -57,18 +61,18 @@ export function uniformFor(day: Day): string {
 
 export const CLASSES: readonly ClassSession[] = [
   { day: 'Mon', time: '5:00p', end: '5:30p', name: 'Little Ninjas', detail: 'Ages 4–6', track: 'kids', beginner: false },
-  { day: 'Mon', time: '5:30p', end: '6:15p', name: 'Kids & Teens', detail: 'Ages 7–15', track: 'kids', beginner: false },
-  { day: 'Mon', time: '6:30p', name: 'Adults', detail: '16+', track: 'adults', beginner: true },
+  { day: 'Mon', time: '5:30p', end: '6:15p', name: 'Big Kids', detail: 'Ages 7–12', track: 'kids', beginner: false },
+  { day: 'Mon', time: '6:30p', name: 'Teens & Adults', detail: '13+', track: 'adults', beginner: true },
 
-  { day: 'Tue', time: '5:30p', end: '6:15p', name: 'Kids & Teens', detail: 'Ages 7–15', track: 'kids', beginner: false },
-  { day: 'Tue', time: '6:30p', name: 'Adults', detail: '16+', track: 'adults', beginner: true },
+  { day: 'Tue', time: '5:30p', end: '6:15p', name: 'Big Kids', detail: 'Ages 7–12', track: 'kids', beginner: false },
+  { day: 'Tue', time: '6:30p', name: 'Teens & Adults', detail: '13+', track: 'adults', beginner: true },
 
   { day: 'Wed', time: '5:00p', end: '5:30p', name: 'Little Ninjas', detail: 'Ages 4–6', track: 'kids', beginner: false },
-  { day: 'Wed', time: '5:30p', end: '6:15p', name: 'Kids & Teens', detail: 'Ages 7–15', track: 'kids', beginner: false },
-  { day: 'Wed', time: '6:30p', name: 'Adults', detail: '16+', track: 'adults', beginner: true },
+  { day: 'Wed', time: '5:30p', end: '6:15p', name: 'Big Kids', detail: 'Ages 7–12', track: 'kids', beginner: false },
+  { day: 'Wed', time: '6:30p', name: 'Teens & Adults', detail: '13+', track: 'adults', beginner: true },
 
-  { day: 'Thu', time: '5:30p', end: '6:15p', name: 'Kids & Teens', detail: 'Ages 7–15', track: 'kids', beginner: false },
-  { day: 'Thu', time: '6:30p', name: 'Adults', detail: '16+', track: 'adults', beginner: true },
+  { day: 'Thu', time: '5:30p', end: '6:15p', name: 'Big Kids', detail: 'Ages 7–12', track: 'kids', beginner: false },
+  { day: 'Thu', time: '6:30p', name: 'Teens & Adults', detail: '13+', track: 'adults', beginner: true },
 ]
 
 /** Left accent-bar colour per track. */
@@ -153,6 +157,64 @@ export function uniformSummary(): string {
   const gi = ALL_DAYS.filter(isGiDay)
   const noGi = ALL_DAYS.filter((d) => !isGiDay(d))
   return `Gi ${formatDays(gi)} · No-gi ${formatDays(noGi)}`
+}
+
+/**
+ * When the doors close, in 24-hour time. Confirmed by the gym
+ * 2026-08-01.
+ *
+ * Deliberately a stated fact rather than something inferred from the
+ * last class start. The previous version added an assumed hour to the
+ * 6:30p class and advertised a 19:30 close; the gym is actually open
+ * until 21:00, so every derivation of it was wrong by ninety minutes —
+ * in the figure Google prints in the search result.
+ *
+ * Opening times still derive from the timetable, because those really
+ * are the first class of the night.
+ */
+const CLOSES_AT = '21:00'
+
+/** "5:00p" → minutes since midnight. */
+function toMinutes(time: string): number {
+  const [, h, m, mer] = /^(\d{1,2}):(\d{2})([ap])$/.exec(time) ?? []
+  if (!h || !m || !mer) throw new Error(`Unparseable class time: ${time}`)
+  const hour = Number(h) % 12
+  return (mer === 'p' ? hour + 12 : hour) * 60 + Number(m)
+}
+
+/** Minutes since midnight → "17:00", the ISO form schema.org wants. */
+function toIsoTime(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+  return `${String(h).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
+}
+
+export interface OpeningHours {
+  /** Full day names, as schema.org's dayOfWeek expects. */
+  days: string[]
+  opens: string
+  closes: string
+}
+
+/**
+ * Opening hours per day, grouped so that days sharing the same window
+ * collapse into one entry.
+ *
+ * `opens` is derived from the timetable because a schedule change that
+ * didn't reach the JSON-LD would leave Google advertising hours the gym
+ * doesn't keep, and these hours appear in the search result itself.
+ * `closes` is the gym's stated closing time — see CLOSES_AT.
+ */
+export function openingHours(): OpeningHours[] {
+  const byOpening = new Map<string, string[]>()
+
+  for (const day of ALL_DAYS) {
+    const times = classesFor(day).map((c) => toMinutes(c.time))
+    if (times.length === 0) continue
+    const opens = toIsoTime(Math.min(...times))
+    byOpening.set(opens, [...(byOpening.get(opens) ?? []), DAY_FULL[day]])
+  }
+
+  return [...byOpening].map(([opens, days]) => ({ days, opens, closes: CLOSES_AT }))
 }
 
 /**

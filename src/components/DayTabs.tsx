@@ -5,8 +5,8 @@ import type { DayTab } from '../hooks/useSchedule'
 interface DayTabsProps {
   tabs: DayTab[]
   onSelect: (day: Day) => void
-  /** id of the panel these tabs control. */
-  panelId: string
+  /** id of the panel a given tab controls — one panel per day. */
+  panelId: (day: Day) => string
   tabId: (day: Day) => string
 }
 
@@ -61,7 +61,7 @@ export function DayTabs({ tabs, onSelect, panelId, tabId }: DayTabsProps) {
           role="tab"
           id={tabId(tab.day)}
           aria-selected={tab.active}
-          aria-controls={panelId}
+          aria-controls={panelId(tab.day)}
           tabIndex={tab.active ? 0 : -1}
           onClick={() => onSelect(tab.day)}
           onKeyDown={(e) => onKeyDown(e, i)}

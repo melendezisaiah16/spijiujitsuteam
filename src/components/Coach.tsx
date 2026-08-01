@@ -39,7 +39,7 @@ export function Coach() {
           and below it. */}
       {/*
         order-2 below lg. Stacked, this photo would land immediately
-        under the kids-class photo from the section above — measured at
+        under the kids photo from the section above — measured at
         1px apart across the full width, which read as one 520px block
         of photography rather than two sections. Dropping it below the
         copy puts the blue text panel between them. At lg the columns
@@ -72,14 +72,16 @@ export function Coach() {
           className="text-on-blue-body flex max-w-[520px] flex-col gap-4 text-[17px] leading-[1.7] sm:text-lg"
           suppressHydrationWarning
         >
+          {/* "One class" deliberately, not "for a day" — his origin is
+              the same offer the whole page is making the reader, and
+              the closing line lands it. */}
           <p className="m-0">
-            He came in to try jiu jitsu for a day in {SITE.instructorSince} and never left —{' '}
+            He came in to try one class in {SITE.instructorSince} and never left —{' '}
             {spell(new Date().getFullYear() - SITE.instructorSince)} years later he's a purple belt
             with a team of his own, still teaching every class on the schedule himself.
           </p>
           <p className="m-0">
-            What he's building now is a room that competes — and it starts the same way his did,
-            with one day on the mat.
+            What he's building now is a room that competes. It starts the way his did: one class.
           </p>
         </div>
 

@@ -37,12 +37,21 @@ export function VisitStrip() {
   return (
     <section
       id="visit"
-      aria-label="Visit us"
+      aria-labelledby="visit-heading"
       // Four across only from xl. At lg each cell had 191px of usable
       // width, which broke the address onto three lines and the hours
       // onto two apiece — it read as damaged rather than dense.
       className="bg-hairline border-hairline grid grid-cols-1 gap-px border-t sm:grid-cols-2 xl:grid-cols-4"
     >
+      {/* The four cell labels are <h3>s. Without a heading of their own
+          they nested under whatever <h2> happened to precede the strip,
+          which put the address and hours inside the closing CTA as far
+          as any document outline was concerned. Visually the amber
+          labels already do this job, so the real heading is sr-only. */}
+      <h2 id="visit-heading" className="sr-only">
+        Visit {SITE.name} in {SITE.city}
+      </h2>
+
       <Cell label="Where">
         {/*
           The address is plain text. It used to be the link to the
