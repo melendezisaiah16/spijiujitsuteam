@@ -37,32 +37,50 @@ static_sites:
         value: "22"
 
       # Feeds the canonical link, Open Graph tags, JSON-LD and
-      # sitemap.xml. ${APP_URL} tracks wherever the app is reachable,
-      # so adding a custom domain needs no edit here. If your App
-      # Platform version doesn't expand it at build time, paste the
-      # literal URL instead.
+      # sitemap.xml. Written literally rather than as ${APP_URL} now
+      # that a custom domain is live: if that variable expands to the
+      # ondigitalocean.app hostname instead of the primary domain, every
+      # canonical on the site points at the wrong host and tells Google
+      # the real domain is the duplicate. Not worth the ambiguity for
+      # one line that changes once a decade.
       - key: SITE_URL
         scope: BUILD_TIME
-        value: ${APP_URL}
+        value: https://spijiujitsuteam.com
 
-      # Keeps this out of Google while it lives on a temporary URL.
-      # DELETE THIS ENTRY WHEN THE REAL DOMAIN GOES LIVE — it is the
-      # only thing standing between you and an indexed site.
-      - key: SITE_NOINDEX
+      # SITE_NOINDEX is deliberately absent. It lived here while the
+      # site ran on a temporary URL; the domain is live, so production
+      # must be indexable. It stays permanently in app.dev.yaml — dev
+      # must never be crawlable or it competes with production for the
+      # same queries.
+
+      # GA4. Production only, and deliberately absent from app.dev.yaml
+      # and from local builds — the property should contain visitors,
+      # not us. Not a secret: a measurement ID is visible in the page
+      # source of every site that uses one.
+      #
+      # Do NOT also paste Google's copy-paste snippet into index.html.
+      # src/lib/analytics.ts already loads the tag, and a second
+      # `config` call doubles every page_view.
+      - key: GA_MEASUREMENT_ID
         scope: BUILD_TIME
-        value: "true"
+        value: G-62T44XVCE1
 
     # No catchall_document on purpose. It rewrites every unknown path
     # to index.html, which suits a client-side router and not this —
     # one page, no routes. A catchall returns 200 for /anything and
     # manufactures soft 404s.
 
-# domains:
-#   - domain: example.com
-#     type: PRIMARY
-#   - domain: www.example.com
-#     type: ALIAS
+# The live domain. This block is NOT optional decoration: `doctl apps
+# update --spec` reconciles domains, so applying a spec without it would
+# strip the custom domain off a running site. TLS is automatic.
+domains:
+  - domain: spijiujitsuteam.com
+    type: PRIMARY
+
+# If www.spijiujitsuteam.com is already pointed at DigitalOcean, add it
+# here BEFORE applying this spec — otherwise applying it removes www.
+# Check App → Settings → Domains first; this file has to match what the
+# dashboard actually has.
 #
-# Once a domain is chosen: add the block above, point DNS at
-# DigitalOcean, and delete the SITE_NOINDEX entry. TLS is automatic and
-# SITE_URL follows ${APP_URL}.
+#   - domain: www.spijiujitsuteam.com
+#     type: ALIAS
