@@ -20,7 +20,13 @@ static_sites:
     # Tailwind, sharp, TypeScript) lives in devDependencies, and
     # buildpacks commonly set NODE_ENV=production, which makes npm skip
     # them — the build then dies with "vite: not found".
-    build_command: npm ci --include=dev && npm run build
+    #
+    # `--ignore-scripts` means no dependency executes code during
+    # install on the build machine, which is the cheapest way to blunt a
+    # compromised-package attack. Verified the build still succeeds:
+    # sharp ships prebuilt binaries via optionalDependencies rather than
+    # a node-gyp install step, so nothing here needs to compile.
+    build_command: npm ci --include=dev --ignore-scripts && npm run build
     output_dir: dist
     environment_slug: node-js
 

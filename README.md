@@ -141,10 +141,17 @@ Searching Maps for `134 S Shore Dr` resolves to the street parcel and drops
 the pin on a neighbouring house. Both map links therefore target the business
 listing itself, via `PLACE` in `src/data/site.ts`:
 
-- **Get directions** routes to the gym's own coordinates
-  (`26.0737075, -97.2120742`) — never a guessed address match.
-- **The address** links to the Google Business Profile by CID
-  (`1768797045726719715`), which opens the listing with photos and hours.
+- **Get directions →** routes to the gym's own coordinates
+  (`26.0737075, -97.2120742`) — never a guessed address match. Google
+  resolves those to "SPI BJJ & Fitness LLC, 134 S Shore Dr" rather than
+  showing raw numbers.
+- **Reviews & photos →** opens the Google Business Profile by CID
+  (`1768797045726719715`).
+
+Both are labelled links. The profile link used to sit on the address
+text itself, styled as a display heading — hover was the only hint it
+was clickable, which does nothing on a phone, so in practice nobody
+could find it. The address is plain text now.
 
 The same coordinates and listing URL are in the JSON-LD as `geo` and
 `hasMap`, and the profile's registered name (`SPI BJJ & Fitness LLC`) is
@@ -256,6 +263,87 @@ Ranking for "jiu jitsu Port Isabel" is mostly won off the site:
 If it were read during render, the build would bake whatever day the build ran
 on into the static HTML. First paint shows Monday; the real day lands on
 hydration.
+
+## Security
+
+Reviewed 2026-07-31. The attack surface is small by construction: a
+static page with no backend, no forms, no user input, no auth, no
+cookies, no analytics and no third-party requests at runtime.
+
+### Verified clean
+
+| Check | Result |
+| --- | --- |
+| `npm audit`, prod and dev | 0 vulnerabilities |
+| Packages reaching the browser | 3 — `react`, `react-dom`, `scheduler` |
+| Secrets / keys / `.env` committed | none |
+| XSS sinks (`dangerouslySetInnerHTML`, `innerHTML`, `eval`) | none in `src/` |
+| `target="_blank"` without `rel="noopener"` | 0 of 2 |
+| Source maps in `dist/` | none |
+| Inline event handlers | 0 |
+| EXIF / IPTC / XMP in the 59 published images | 0 — sharp strips it |
+| GPS in source photo EXIF | none |
+
+### Fixed in review
+
+**`SITE_URL` was an HTML injection vector.** It is interpolated into
+the canonical link, four Open Graph tags and three JSON-LD fields. A
+value containing a quote escaped the `href` attribute — a hostile
+value injected **seven `<script>` tags into `<head>`** and left the
+JSON-LD unparseable.
+
+Reaching it needs build-environment access, which is already
+privileged, so the realistic risk was the accidental case: one stray
+character in a pasted URL silently corrupting the structured data with
+no error. `site.config.js` now validates down to a bare origin and
+**throws**, failing the build rather than shipping something mangled.
+
+**Builds no longer run dependency install scripts.** Both app specs use
+`npm ci --include=dev --ignore-scripts`, so a compromised package can't
+execute code on the build machine. Verified the build still succeeds —
+sharp ships prebuilt binaries rather than compiling.
+
+### Accepted risk: no security headers
+
+App Platform static sites cannot set response headers. Verified against
+DigitalOcean's API — the schema rejects the field outright:
+
+```
+static_sites[].headers   → unknown field "headers"
+ingress.rules[].headers  → unknown field "headers"
+```
+
+So there is no CSP, `X-Frame-Options`, `Referrer-Policy` or HSTS beyond
+whatever DigitalOcean sets by default.
+
+**The one that matters here is clickjacking.** This page exists to make
+someone dial one number. Nothing stops a third party framing it and
+overlaying a different number to intercept leads. It is cheap to do and
+would be hard to notice.
+
+Options, in order of preference:
+
+1. **Front the app with Cloudflare** (free tier). Transform Rules set
+   `Content-Security-Policy`, `X-Frame-Options: DENY`,
+   `Referrer-Policy` and HSTS. This is the real fix.
+2. **Accept it.** A single-location gym is a low-value target and the
+   payoff for an attacker is small.
+
+A JavaScript frame-buster was considered and rejected: `sandbox` on the
+iframe defeats it, and it would put security theatre on the critical
+path.
+
+If a CSP is ever added, note the page needs `style-src 'unsafe-inline'`
+— eight inline `style` attributes come from image `object-position` and
+the class-row accent bars. `script-src` needs no `unsafe-inline`; the
+only inline block is `application/ld+json`, which is data.
+
+### Not a code issue, but the highest-impact risk
+
+**The site publishes identifiable photographs of children.** Two of the
+five images are of the kids class. Confirm the gym holds photo releases
+from every parent whose child is recognisable, and that they cover web
+use. This is worth more attention than anything above.
 
 ## Deploying (DigitalOcean App Platform)
 
