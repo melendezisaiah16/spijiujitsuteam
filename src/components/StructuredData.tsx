@@ -1,6 +1,6 @@
 import { openingHours } from '../data/classes'
 import { faqItems } from '../data/faq'
-import { PLACE, placeHref, SITE, SOCIAL_PROFILES } from '../data/site'
+import { ALTERNATE_NAMES, PLACE, placeHref, SITE, SOCIAL_PROFILES } from '../data/site'
 
 /**
  * Every piece of schema.org markup on the site, in one connected graph.
@@ -32,7 +32,7 @@ export function StructuredData() {
     '@id': id('gym'),
     name: SITE.name,
     legalName: SITE.legalName,
-    alternateName: ['SPI BJJ', SITE.legalName],
+    alternateName: [...ALTERNATE_NAMES],
     slogan: SITE.tagline,
     description: `Brazilian jiu jitsu academy in ${SITE.city}, ${SITE.state}. Classes for adults, women, teens and children from age four, Monday through Thursday. ${SITE.affiliate} affiliate.`,
     url: `${origin}/`,

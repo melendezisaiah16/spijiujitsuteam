@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Day } from '../data/classes'
 import type { DayTab } from '../hooks/useSchedule'
 
@@ -18,6 +18,32 @@ interface DayTabsProps {
  */
 export function DayTabs({ tabs, onSelect, panelId, tabId }: DayTabsProps) {
   const stripRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * Colour transitions stay off until a frame after hydration.
+   *
+   * The prerendered HTML always marks Monday active — the real day
+   * can only arrive on the client (see useToday). Animating that
+   * correction cross-fades two tabs on every load Tuesday to Thursday,
+   * so the wrong day visibly sits highlighted for 150ms. Worse, mid-fade
+   * the inactive tab's faint grey count is briefly painted over amber,
+   * which is a genuine contrast failure axe catches four days in seven.
+   *
+   * Two frames, not one: useToday's effect and the re-render it causes
+   * both land before the second callback, so the correction snaps
+   * instantly and only user-driven changes animate.
+   */
+  const [animated, setAnimated] = useState(false)
+  useEffect(() => {
+    let inner = 0
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => setAnimated(true))
+    })
+    return () => {
+      cancelAnimationFrame(outer)
+      cancelAnimationFrame(inner)
+    }
+  }, [])
 
   const move = (to: number) => {
     const index = (to + tabs.length) % tabs.length
@@ -69,7 +95,7 @@ export function DayTabs({ tabs, onSelect, panelId, tabId }: DayTabsProps) {
           // so it isn't clipped by the neighbouring cells. That means
           // the global amber ring lands on amber for the selected tab
           // and disappears — it needs the dark outline instead.
-          className={`flex flex-col items-center gap-1 border-0 px-1 pt-[14px] pb-[13px] transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 ${
+          className={`flex flex-col items-center gap-1 border-0 px-1 pt-[14px] pb-[13px] focus-visible:outline-2 focus-visible:-outline-offset-2 ${animated ? 'transition-colors' : ''} ${
             tab.active
               ? 'bg-amber text-midnight focus-visible:outline-midnight'
               : 'bg-midnight text-dim hover:bg-[#112039]'

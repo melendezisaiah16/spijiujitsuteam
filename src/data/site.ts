@@ -4,8 +4,25 @@
  */
 
 export const SITE = {
+  /**
+   * Must match the Google Business Profile name exactly, bar casing —
+   * the profile reads "SPI JIU JITSU". This string is also what Google
+   * uses as the site name beside the title in search results, via the
+   * WebSite node's `name`.
+   */
   name: 'SPI Jiu Jitsu',
-  /** Registered name on the Google Business Profile. */
+  /**
+   * The registered legal entity, which is NOT the Business Profile name
+   * any more — the profile the site points at is "SPI JIU JITSU", while
+   * a second listing under this LLC name still exists and is being
+   * claimed.
+   *
+   * Kept deliberately. It is factually the registered entity, and while
+   * two listings exist it is the strongest hint Google has that the two
+   * records describe one business — which is exactly what a merge
+   * request needs corroborating. Remove it only if the LLC is dissolved
+   * or renamed, not because the profile name changed.
+   */
   legalName: 'SPI BJJ & Fitness LLC',
   tagline: 'Roll like a wave',
   city: 'Port Isabel',
@@ -22,6 +39,26 @@ export const SITE = {
 } as const
 
 export const ADDRESS = `${SITE.street}, ${SITE.city}, ${SITE.state} ${SITE.zip}`
+
+/**
+ * Names this business is genuinely known by, for JSON-LD
+ * `alternateName`.
+ *
+ * These are real variants, not keyword padding. "SPI Jiu Jitsu Port
+ * Isabel" and the like do not belong here: stuffing alternateName with
+ * search phrases is the schema equivalent of keyword-stuffing a Business
+ * Profile name, and Google discounts or penalises both.
+ *
+ * "SPI Jiu Jitsu Team" matters more than it looks — it is the domain
+ * (spijiujitsuteam.com). Anyone who reads the URL off a gi, a flyer or
+ * a car window searches that phrase, and without this the site claims
+ * no connection to the name on its own address bar.
+ */
+export const ALTERNATE_NAMES: readonly string[] = [
+  'SPI Jiu Jitsu Team',
+  'SPI BJJ',
+  SITE.legalName,
+]
 
 /**
  * The gym's own pin, not the street address.
