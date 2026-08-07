@@ -1,6 +1,6 @@
 import { openingHours } from '../data/classes'
 import { faqItems } from '../data/faq'
-import { PLACE, SITE, SOCIAL_PROFILES } from '../data/site'
+import { PLACE, placeHref, SITE, SOCIAL_PROFILES } from '../data/site'
 
 /**
  * Every piece of schema.org markup on the site, in one connected graph.
@@ -49,7 +49,7 @@ export function StructuredData() {
       addressCountry: 'US',
     },
     geo: { '@type': 'GeoCoordinates', latitude: PLACE.lat, longitude: PLACE.lng },
-    hasMap: `https://www.google.com/maps?cid=${PLACE.cid}`,
+    hasMap: placeHref,
     sameAs: [...SOCIAL_PROFILES],
     knowsLanguage: ['en-US'],
     areaServed: ['Port Isabel', 'Laguna Vista', 'South Padre Island', 'Los Fresnos'].map(

@@ -278,7 +278,7 @@ test.describe('CTAs', () => {
   test('directions route to the gym coordinates, not the street address', async ({ page }) => {
     await expect(page.getByRole('link', { name: /Get directions/ })).toHaveAttribute(
       'href',
-      'https://www.google.com/maps/dir/?api=1&destination=26.0737075%2C-97.2120742',
+      'https://www.google.com/maps/dir/?api=1&destination=26.0738256%2C-97.2121702',
     )
   })
 
@@ -290,7 +290,7 @@ test.describe('CTAs', () => {
     await expect(profile).toBeVisible()
     await expect(profile).toHaveAttribute(
       'href',
-      'https://www.google.com/maps?cid=1768797045726719715',
+      'https://www.google.com/maps?cid=6663607025632879294',
     )
     // The address itself is plain text now — no hidden affordance.
     await expect(page.locator('address a')).toHaveCount(0)

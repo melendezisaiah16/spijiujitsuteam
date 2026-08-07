@@ -152,11 +152,11 @@ the pin on a neighbouring house. Both map links therefore target the business
 listing itself, via `PLACE` in `src/data/site.ts`:
 
 - **Get directions →** routes to the gym's own coordinates
-  (`26.0737075, -97.2120742`) — never a guessed address match. Google
+  (`26.0738256, -97.2121702`) — never a guessed address match. Google
   resolves those to "SPI BJJ & Fitness LLC, 134 S Shore Dr" rather than
   showing raw numbers.
 - **Reviews & photos →** opens the Google Business Profile by CID
-  (`1768797045726719715`).
+  (`6663607025632879294`).
 
 Both are labelled links. The profile link used to sit on the address
 text itself, styled as a display heading — hover was the only hint it

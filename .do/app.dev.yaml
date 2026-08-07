@@ -9,11 +9,11 @@
 #
 #   doctl apps create --spec .do/app.dev.yaml
 #   doctl apps update <app-id> --spec .do/app.dev.yaml
-name: spi-jiu-jitsu-dev
+name: spibjjteam-dev
 region: nyc
 
 static_sites:
-  - name: web
+  - name: spibjjteam-dev
     github:
       repo: melendezisaiah16/spijiujitsuteam
       branch: dev

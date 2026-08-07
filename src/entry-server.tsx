@@ -2,7 +2,7 @@ import { renderToString } from 'react-dom/server'
 import { App } from './App'
 import { openDaysSummary, programSummaries, uniformSummary } from './data/classes'
 import { faqItems } from './data/faq'
-import { ADDRESS, SITE } from './data/site'
+import { ADDRESS, placeHref, SITE } from './data/site'
 
 /**
  * Build-time render. Used only by scripts/prerender.mjs to bake the
@@ -55,7 +55,7 @@ ${faq}
 ## Links
 
 - [Website](${siteUrl}/): schedule, programs, instructor and directions
-- [Google Business Profile](https://www.google.com/maps?cid=1768797045726719715): reviews, photos and directions
+- [Google Business Profile](${placeHref}): reviews, photos and directions
 - [${SITE.affiliate}](${SITE.affiliateUrl}): the affiliation this academy trains under
 `
 }

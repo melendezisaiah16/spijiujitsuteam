@@ -6,11 +6,11 @@
 #
 #   doctl apps create --spec .do/app.prod.yaml
 #   doctl apps update <app-id> --spec .do/app.prod.yaml
-name: spi-jiu-jitsu
+name: spibjjteam-prod
 region: nyc
 
 static_sites:
-  - name: web
+  - name: spibjjteam-prod
     github:
       repo: melendezisaiah16/spijiujitsuteam
       branch: main
@@ -26,7 +26,11 @@ static_sites:
     # compromised-package attack. Verified the build still succeeds:
     # sharp ships prebuilt binaries via optionalDependencies rather than
     # a node-gyp install step, so nothing here needs to compile.
-    build_command: npm ci --include=dev --ignore-scripts && npm run build
+    # NOTE: production is currently running WITHOUT --ignore-scripts.
+    # The flag is live on dev as a canary; promote it here once dev has
+    # built green a few times. Deliberate: a build-time change does not
+    # belong in the same deploy as an urgent configuration fix.
+    build_command: npm ci --include=dev && npm run build
     output_dir: dist
     environment_slug: node-js
 
@@ -77,10 +81,9 @@ domains:
   - domain: spijiujitsuteam.com
     type: PRIMARY
 
-# If www.spijiujitsuteam.com is already pointed at DigitalOcean, add it
-# here BEFORE applying this spec — otherwise applying it removes www.
-# Check App → Settings → Domains first; this file has to match what the
-# dashboard actually has.
-#
-#   - domain: www.spijiujitsuteam.com
-#     type: ALIAS
+  # www has a CNAME at the registrar (GoDaddy) pointing here. It was
+  # resolving but refusing connections, because DigitalOcean will not
+  # serve — or issue a certificate for — a hostname the app doesn't
+  # claim. Listing it here is what fixes that.
+  - domain: www.spijiujitsuteam.com
+    type: ALIAS

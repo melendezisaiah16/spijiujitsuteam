@@ -30,11 +30,24 @@ export const ADDRESS = `${SITE.street}, ${SITE.city}, ${SITE.state} ${SITE.zip}`
  * which drops the pin on a neighbouring house. These come from the
  * business listing itself: `lat`/`lng` are its coordinates and `cid`
  * is its Google Maps customer ID.
+ *
+ * Repointed 2026-08-06 to the "SPI JIU JITSU" listing. The previous
+ * values (cid 1768797045726719715, 26.0737075/-97.2120742) belonged to
+ * a *different* profile 16 m away — not a moved pin, a separate record.
+ * That matters more than the distance suggests: `hasMap` and `sameAs`
+ * are the site's claim about which Google listing this business *is*,
+ * so pointing them at the wrong one splits the entity in two and wastes
+ * every review and photo on the listing people actually find.
+ *
+ * Sourced from the Maps URL: `!1s<feature-id>:0x5c79e348d5a522be` is
+ * the CID in hex (6663607025632879294 decimal), and `!3d/!4d` carry the
+ * pin's real coordinates — not the `@lat,lng` in the path, which is
+ * only the map viewport and is a few hundred metres off.
  */
 export const PLACE = {
-  lat: 26.0737075,
-  lng: -97.2120742,
-  cid: '1768797045726719715',
+  lat: 26.0738256,
+  lng: -97.2121702,
+  cid: '6663607025632879294',
 } as const
 
 /** Digits only — every deep link is built from this. */
