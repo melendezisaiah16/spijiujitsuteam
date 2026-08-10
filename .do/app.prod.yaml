@@ -74,6 +74,51 @@ static_sites:
     # one page, no routes. A catchall returns 200 for /anything and
     # manufactures soft 404s.
 
+# Routing. Like `domains` below, this block is NOT optional: the live
+# app already has an auto-generated ingress, and applying a spec without
+# one silently replaces it. Leaving it out is how the www redirect would
+# quietly disappear the next time anyone ran the command in this file's
+# own header.
+#
+# WHY THE REDIRECT. Both hostnames served 200 with only a rel=canonical
+# separating them, and Google is explicit that a canonical is "a hint,
+# not a rule". Search Console showed the cost during launch week: the
+# per-page rows summed to 81 impressions against a property total of 61,
+# and that 20-impression gap is the documented signature of one SERP
+# listing both URLs at once — roughly 20 results pages showed the apex
+# and www together. A 301 is a directive rather than a hint, and makes
+# a recurrence structurally impossible.
+#
+# ORDER IS LOAD-BEARING BUT UNDOCUMENTED. DigitalOcean's app spec
+# reference, its URL-rewrites guide and the Terraform resource all
+# decline to state an evaluation order. Redirect-before-component is the
+# only sane reading and matches their community examples — verify
+# empirically after applying, don't assume.
+#
+# `authority.exact: ""` on the second rule is DigitalOcean's own
+# serialisation of "no authority constraint". It is equally undocumented
+# and it currently serves the apex correctly; reproduced verbatim rather
+# than tidied.
+ingress:
+  rules:
+    - match:
+        authority:
+          exact: www.spijiujitsuteam.com
+        path:
+          prefix: /
+      redirect:
+        authority: spijiujitsuteam.com
+        scheme: https
+        redirect_code: 301
+
+    - component:
+        name: spibjjteam-prod
+      match:
+        authority:
+          exact: ""
+        path:
+          prefix: /
+
 # The live domain. This block is NOT optional decoration: `doctl apps
 # update --spec` reconciles domains, so applying a spec without it would
 # strip the custom domain off a running site. TLS is automatic.
@@ -85,5 +130,11 @@ domains:
   # resolving but refusing connections, because DigitalOcean will not
   # serve — or issue a certificate for — a hostname the app doesn't
   # claim. Listing it here is what fixes that.
+  #
+  # DO NOT DELETE THIS BECAUSE THE INGRESS NOW REDIRECTS www. The
+  # redirect is served *by this app*, so www has to reach it first — and
+  # an unclaimed hostname fails at the TLS handshake, before any rule can
+  # run. Removing this doesn't send www to the apex; it takes www off the
+  # internet.
   - domain: www.spijiujitsuteam.com
     type: ALIAS

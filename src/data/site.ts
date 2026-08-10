@@ -28,7 +28,14 @@ export const SITE = {
   city: 'Port Isabel',
   state: 'TX',
   /** Port Isabel is NOT on South Padre Island. Copy must never say "on the island." */
-  street: '134 S Shore Dr',
+  /**
+   * Includes the unit, because both Google Business Profiles do
+   * ("134 S Shore Dr Unit c"). NAP consistency is judged on the exact
+   * string: an address that differs from the profile by a unit number
+   * is a weaker corroboration than one that matches it character for
+   * character, and this string is the site's half of that match.
+   */
+  street: '134 S Shore Dr Unit C',
   zip: '78578',
   phone: '(956) 667-1971',
   instructor: 'Thomas Trevino',
