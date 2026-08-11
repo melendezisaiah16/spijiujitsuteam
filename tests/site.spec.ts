@@ -290,7 +290,7 @@ test.describe('CTAs', () => {
     await expect(profile).toBeVisible()
     await expect(profile).toHaveAttribute(
       'href',
-      'https://www.google.com/maps?cid=6663607025632879294',
+      'https://www.google.com/maps?cid=1768797045726719715',
     )
     // The address itself is plain text now — no hidden affordance.
     await expect(page.locator('address a')).toHaveCount(0)

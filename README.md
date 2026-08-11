@@ -153,10 +153,10 @@ listing itself, via `PLACE` in `src/data/site.ts`:
 
 - **Get directions →** routes to the gym's own coordinates
   (`26.0738256, -97.2121702`) — never a guessed address match. Google
-  resolves those to "SPI BJJ & Fitness LLC, 134 S Shore Dr" rather than
-  showing raw numbers.
+  resolves those to the business listing rather than showing raw
+  numbers.
 - **Reviews & photos →** opens the Google Business Profile by CID
-  (`6663607025632879294`).
+  (`1768797045726719715`).
 
 Both are labelled links. The profile link used to sit on the address
 text itself, styled as a display heading — hover was the only hint it
@@ -164,10 +164,21 @@ was clickable, which does nothing on a phone, so in practice nobody
 could find it. The address is plain text now.
 
 The same coordinates and listing URL are in the JSON-LD as `geo` and
-`hasMap`, and the profile's registered name (`SPI BJJ & Fitness LLC`) is
-there as `legalName`/`alternateName` so Google links the page to the
-listing. That entity match is worth more for local ranking than anything
-else on the page.
+`hasMap`. The profile is named **SPI JIU JITSU**, which `SITE.name`
+matches; the LLC name stays as `legalName`/`alternateName` because it is
+the registered entity and a name the gym is still known by. That entity
+match is worth more for local ranking than anything else on the page.
+
+**The gym had two Business Profiles** — same address, same phone, both
+named SPI JIU JITSU, pins 16m apart, one holding almost all the reviews.
+Google merged them and the smaller listing came down. `PLACE.cid`
+tracked whichever the gym could administer at the time and now points at
+the survivor; the comment on it records the sequence and the decode.
+
+Two things worth knowing if a duplicate ever reappears. **Merge, never
+delete** — a merge combines reviews, a deletion destroys them. And per
+Google's documentation **review replies can be lost in a merge**, so
+check the survivor and re-reply where they've gone.
 
 ## Tagline
 

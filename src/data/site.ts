@@ -12,28 +12,32 @@ export const SITE = {
    */
   name: 'SPI Jiu Jitsu',
   /**
-   * The registered legal entity, which is NOT the Business Profile name
-   * any more — the profile the site points at is "SPI JIU JITSU", while
-   * a second listing under this LLC name still exists and is being
-   * claimed.
+   * The registered legal entity. No longer the Business Profile name —
+   * the surviving profile reads "SPI JIU JITSU".
    *
-   * Kept deliberately. It is factually the registered entity, and while
-   * two listings exist it is the strongest hint Google has that the two
-   * records describe one business — which is exactly what a merge
-   * request needs corroborating. Remove it only if the LLC is dissolved
-   * or renamed, not because the profile name changed.
+   * Kept deliberately, and on the plain grounds that it is true: this is
+   * the registered entity, `Organization.legalName` is the right slot
+   * for it, and it is a name the gym is still referred to by on
+   * paperwork. Google resolves the local entity from NAP consistency and
+   * the profile-to-site link, not from these strings, so carrying the
+   * LLC name costs nothing. Remove it only if the entity is dissolved or
+   * renamed — not because the profile is named something else.
    */
   legalName: 'SPI BJJ & Fitness LLC',
   tagline: 'Roll like a wave',
   city: 'Port Isabel',
   state: 'TX',
-  /** Port Isabel is NOT on South Padre Island. Copy must never say "on the island." */
   /**
-   * Includes the unit, because both Google Business Profiles do
-   * ("134 S Shore Dr Unit c"). NAP consistency is judged on the exact
-   * string: an address that differs from the profile by a unit number
-   * is a weaker corroboration than one that matches it character for
-   * character, and this string is the site's half of that match.
+   * Port Isabel is NOT on South Padre Island. Copy must never say "on
+   * the island."
+   *
+   * Includes the unit, because the Business Profile does. Both listings
+   * rendered as "134 S Shore Dr Unit c" in search results before the
+   * merge, so the survivor carries it too — re-verify against the
+   * profile if that address is ever edited. NAP consistency is judged on
+   * the exact string: an address differing from the profile by a unit
+   * number is weaker corroboration than one matching character for
+   * character, and this is the site's half of that match.
    */
   street: '134 S Shore Dr Unit C',
   zip: '78578',
@@ -75,23 +79,45 @@ export const ALTERNATE_NAMES: readonly string[] = [
  * business listing itself: `lat`/`lng` are its coordinates and `cid`
  * is its Google Maps customer ID.
  *
- * Repointed 2026-08-06 to the "SPI JIU JITSU" listing. The previous
- * values (cid 1768797045726719715, 26.0737075/-97.2120742) belonged to
- * a *different* profile 16 m away — not a moved pin, a separate record.
- * That matters more than the distance suggests: `hasMap` and `sameAs`
- * are the site's claim about which Google listing this business *is*,
- * so pointing them at the wrong one splits the entity in two and wastes
- * every review and photo on the listing people actually find.
+ * The gym had two Business Profiles at this address for a while. Both
+ * were named SPI JIU JITSU with the same phone number and pins 16m
+ * apart, and one held almost all the reviews. This value tracked
+ * whichever the gym could administer at the time:
  *
- * Sourced from the Maps URL: `!1s<feature-id>:0x5c79e348d5a522be` is
- * the CID in hex (6663607025632879294 decimal), and `!3d/!4d` carry the
- * pin's real coordinates — not the `@lat,lng` in the path, which is
- * only the map viewport and is a few hundred metres off.
+ *   …9715  the review-holding listing. Ownership being recovered.
+ *   …9294  the second listing, administered first. Set 2026-08-06.
+ *   …9715  survivor of the merge. Set back 2026-08-11.
+ *
+ * (Decimal suffixes, because that is how the value is stored here. The
+ * hex form only appears in Maps URLs.)
+ *
+ * Google merged them and the smaller listing came down. Per Google's
+ * own documentation a merge *combines* reviews rather than moving them,
+ * and review replies can be lost in the process — worth checking on the
+ * survivor.
+ *
+ * Keeping this current matters because `hasMap` and `sameAs` are the
+ * site's claim about which Google listing this business *is*. Nothing
+ * Google publishes suggests pointing at a suppressed duplicate is
+ * penalised, so treat this as lost corroboration rather than damage —
+ * but corroboration is the entire reason the claim is here.
+ *
+ * The coordinates are the survivor's, read from `!3d`/`!4d`. They sit
+ * ~16m from the values this file carried for this same CID before
+ * 2026-08-06; whether the pin was adjusted or the original figure was
+ * imprecise isn't recoverable now.
+ *
+ * Sourced from the Maps URL's `data=` parameter, where `!1s<ftid>`
+ * splits on the colon and the second half — `0x188c078aa64d2ee3` — is
+ * the CID in hex. Worth knowing that Google documents neither `data=`
+ * nor `cid=`: this is stable, long-established convention rather than a
+ * contract. The `@lat,lng` in the path is only the map viewport and
+ * sits ~257m west of the pin.
  */
 export const PLACE = {
   lat: 26.0738256,
   lng: -97.2121702,
-  cid: '6663607025632879294',
+  cid: '1768797045726719715',
 } as const
 
 /** Digits only — every deep link is built from this. */
@@ -118,18 +144,6 @@ export const directionsHref = `https://www.google.com/maps/dir/?api=1&destinatio
 export const placeHref = `https://www.google.com/maps?cid=${PLACE.cid}`
 
 /**
- * Off-site profiles for the same business, for JSON-LD `sameAs`.
- *
- * "Described the same way in several places" is weighted heavily by AI
- * answer engines and by Google's entity resolution — this is worth far
- * more than its size suggests. Add the gym's Facebook and Instagram
- * URLs here and they flow into the structured data automatically.
- *
- * Only verified URLs belong here. A guessed profile link is worse than
- * an absent one: `sameAs` asserts "this is the same entity", so a wrong
- * URL actively tells Google the gym is somebody else.
- */
-/**
  * The gym's social accounts, as visible links.
  *
  * Supplied by the gym 2026-08-01. The Facebook entry is a share link
@@ -147,11 +161,27 @@ export const SOCIAL_LINKS = [
 ] as const
 
 /**
- * The same accounts as bare URLs, for JSON-LD `sameAs`.
+ * Off-site profiles for the same business, for JSON-LD `sameAs`.
+ *
+ * "Described the same way in several places" is weighted heavily by AI
+ * answer engines and by Google's entity resolution, so this is worth
+ * more than its size suggests.
+ *
+ * ONLY VERIFIED URLS BELONG HERE. `sameAs` asserts "this is the same
+ * entity", so a wrong URL actively tells Google the gym is somebody
+ * else. That rule is why this list is short, and it is the rule the CID
+ * above got caught by when a Business Profile was merged away.
+ *
+ * One entity, one URL each. Don't add a second spelling of a listing
+ * already present — the Knowledge Graph mid and place-ID forms of the
+ * Google profile are the same entity as the CID URL, and enumerating
+ * all three is duplicate-entity noise rather than corroboration. If a
+ * second identifier is ever genuinely needed, `identifier` as a
+ * PropertyValue is the slot for it.
  *
  * Derived from SOCIAL_LINKS rather than listed again — a profile that
  * search engines are told about but visitors can't reach is the bug
- * this file just had.
+ * this file once had.
  */
 export const SOCIAL_PROFILES: readonly string[] = [
   placeHref,
