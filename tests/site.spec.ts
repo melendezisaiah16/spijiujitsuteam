@@ -402,3 +402,28 @@ test.describe('mobile', () => {
     expect(overflow, 'page scrolls sideways').toBeLessThanOrEqual(0)
   })
 })
+
+// The site said "Text or call" under a phone number that opened
+// Messages. Twelve sms links, no way to dial. Someone who wanted to
+// speak to a person had no route.
+test.describe('contact routes', () => {
+  test('the phone number dials, and texting stays available beside it', async ({ page }) => {
+    await page.goto('/')
+    const number = page.locator('#visit a[href^="tel:"]')
+    await expect(number).toHaveCount(1)
+    await expect(number).toHaveAttribute('href', 'tel:9566671971')
+    await expect(number).toContainText('(956) 667-1971')
+
+    // Texting is still offered in the same cell, just not as the
+    // headline — sms remains the primary ask everywhere else.
+    await expect(page.locator('#visit a[href^="sms:"]')).toHaveCount(1)
+  })
+
+  test('every other CTA on the page is still a text link', async ({ page }) => {
+    await page.goto('/')
+    const sms = await page.locator('a[href^="sms:"]').count()
+    const tel = await page.locator('a[href^="tel:"]').count()
+    expect(sms, 'text remains the primary conversion').toBeGreaterThanOrEqual(10)
+    expect(tel, 'exactly one dial affordance, in the visit strip').toBe(1)
+  })
+})

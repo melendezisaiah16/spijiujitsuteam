@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { openDaysSummary, programSummaries, uniformSummary } from '../data/classes'
-import { directionsHref, placeHref, SITE, smsHref } from '../data/site'
+import { directionsHref, placeHref, SITE, smsHref, telHref } from '../data/site'
 
 /**
  * Small labelled link out to Google Maps.
@@ -92,14 +92,28 @@ export function VisitStrip() {
       </Cell>
 
       <Cell label="Questions">
+        {/*
+          The number dials. It used to open Messages, directly under a
+          caption reading "Text or call" — so the one place on the site
+          that offered a phone call didn't make one, and every other CTA
+          is sms: too. Twelve text links, no way to call.
+
+          Texting stays the primary ask everywhere else; this is the
+          cell someone lands on when they want to speak to a person, and
+          for parents and older callers that is still a phone call.
+        */}
         <a
-          href={smsHref}
+          href={telHref}
           className="font-display text-bone hover:text-amber flex min-h-11 items-center text-[28px] leading-[1.1] font-extrabold uppercase transition-colors sm:text-[31px]"
         >
           {SITE.phone}
         </a>
         <p className="text-dim m-0 font-mono text-xs">
-          Text or call — {SITE.instructor.split(' ')[0]} answers
+          Call, or{' '}
+          <a href={smsHref} className="text-sand hover:text-bone transition-colors">
+            <span className="border-b border-[#3a4a66] pb-0.5">text instead</span>
+          </a>{' '}
+          — {SITE.instructor.split(' ')[0]} answers
         </p>
       </Cell>
     </section>
