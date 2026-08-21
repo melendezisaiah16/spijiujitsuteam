@@ -27,7 +27,7 @@ export function Schedule({ schedule }: { schedule: ScheduleModel }) {
             Pick your night.
           </h2>
           <p className="text-muted m-0 text-base leading-[1.6] sm:text-[17px]">
-            Every class this week. Text us and your first one's free — no app, no account.
+            Every class this week. Text us and your first one's free. No app, no account.
           </p>
         </div>
         {/* nowrap so the flex sibling can't squeeze this into breaking

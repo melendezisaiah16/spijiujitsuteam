@@ -427,3 +427,19 @@ test.describe('contact routes', () => {
     expect(tel, 'exactly one dial affordance, in the visit strip').toBe(1)
   })
 })
+
+// Thomas asked for em dashes out of the copy. En dashes stay: they are
+// the correct mark for the ranges ("4–12", "5:00–5:30p", "Mon–Thu").
+test('no em dashes in visible copy or meta tags', async ({ page }) => {
+  await page.goto('/')
+  const text = ((await page.locator('body').textContent()) ?? '')
+  expect(text, 'em dash in visible copy').not.toContain('—')
+
+  const metas = await page
+    .locator('meta[content], title')
+    .evaluateAll((els) => els.map((el) => el.getAttribute('content') ?? el.textContent ?? '').join(' '))
+  expect(metas, 'em dash in a meta tag or the title').not.toContain('—')
+
+  // Ranges must survive the purge.
+  expect(text).toContain('–')
+})

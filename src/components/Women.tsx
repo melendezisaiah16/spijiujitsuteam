@@ -70,7 +70,7 @@ export function Women() {
 
         <div className="text-muted flex max-w-[520px] flex-col gap-4 text-base leading-[1.7] sm:text-[17px]">
           <p className="m-0">
-            Jiu jitsu assumes the other person is bigger and stronger than you — that's the problem
+            Jiu jitsu assumes the other person is bigger and stronger than you. That's the problem
             it was built to solve. Leverage and position instead of strength. It's self-defense that
             holds up when the other person really is stronger: a real answer to being grabbed,
             pinned, or put on the ground.

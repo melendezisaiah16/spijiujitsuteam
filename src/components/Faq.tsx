@@ -41,7 +41,7 @@ export function Faq() {
           Common questions.
         </h2>
         <p className="text-muted m-0 max-w-[360px] text-base leading-[1.65]">
-          Anything not answered here — text {SITE.phone} and{' '}
+          Anything not answered here? Text {SITE.phone} and{' '}
           {SITE.instructor.split(' ')[0]} will answer it himself.
         </p>
         {/* Held out of the mobile flow: below lg this column stacks

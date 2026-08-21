@@ -108,12 +108,15 @@ export function VisitStrip() {
         >
           {SITE.phone}
         </a>
+        {/* The link sits at the end so its punctuation can butt straight
+            against the closing tag. With the sentence the other way
+            round, JSX inserted a space and it rendered "text instead ." */}
         <p className="text-dim m-0 font-mono text-xs">
-          Call, or{' '}
+          {SITE.instructor.split(' ')[0]} answers. Call, or{' '}
           <a href={smsHref} className="text-sand hover:text-bone transition-colors">
             <span className="border-b border-[#3a4a66] pb-0.5">text instead</span>
-          </a>{' '}
-          — {SITE.instructor.split(' ')[0]} answers
+          </a>
+          .
         </p>
       </Cell>
     </section>

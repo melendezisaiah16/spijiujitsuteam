@@ -26,7 +26,7 @@ export function Closer() {
         className="bg-amber text-midnight hover:bg-bone mt-1.5 flex flex-col gap-1 px-8 py-5 transition-colors lg:px-[34px]"
       >
         <span className="font-mono text-[11px] tracking-[0.12em] uppercase opacity-75">
-          Text us — free trial class
+          Text us for a free class
         </span>
         <span className="font-display text-phone-lg font-extrabold">{SITE.phone}</span>
       </a>

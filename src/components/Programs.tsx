@@ -58,7 +58,7 @@ function ProgramCard({ title, sub, body, photo, photoAlt, photoPosition, tone }:
           }`}
         >
           Try free
-          <span className="sr-only"> — {title}</span>
+          <span className="sr-only">, {title}</span>
         </a>
       </div>
 
@@ -89,7 +89,7 @@ export function Programs() {
           Find your class.
         </h2>
         <p className="text-muted m-0 max-w-[340px] text-base leading-[1.65]">
-          Two programs — teens and adults, and kids. Both start with a free class.
+          Two programs: teens and adults, and kids. Both start with a free class.
         </p>
       </div>
 
@@ -100,7 +100,7 @@ export function Programs() {
           sub="13+ · no experience needed"
           photo="adults-training"
           photoAlt="Adults drilling in gi on the mat during an evening class."
-          body="Complete beginners, people training a couple of nights a week to stay sharp, and competitors all work from the same class toward their own goals. Teens move up from about thirteen, depending on their size — text us and we'll tell you which one fits. Turn up any night."
+          body="Complete beginners, people training a couple of nights a week to stay sharp, and competitors all work from the same class toward their own goals. Teens move up from about thirteen, depending on their size. Text us and we'll tell you which one fits. Turn up any night."
         />
         <ProgramCard
           tone="sand"
@@ -111,7 +111,7 @@ export function Programs() {
           // adults standing at the ends of the line at most widths, so
           // only the coach kneeling in the middle is reliably in frame.
           photoAlt="The SPI Jiu Jitsu kids class lined up across the mat with their coach."
-          body="Little Ninjas is where four to six-year-olds start — the very basics, and the balance, focus and confidence that come with them. They're growing up as much as they're learning a martial art. From seven, Big Kids goes properly into the art itself, until they're ready to move up with the teens and adults."
+          body="Little Ninjas is where four to six-year-olds start: the very basics, and the balance, focus and confidence that come with them. They're growing up as much as they're learning a martial art. From seven, Big Kids goes properly into the art itself, until they're ready to move up with the teens and adults."
         />
       </div>
     </section>

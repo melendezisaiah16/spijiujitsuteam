@@ -58,7 +58,7 @@ export function faqItems(): FaqItem[] {
     },
     {
       q: 'What should I wear to my first class?',
-      a: `On no-gi nights (${noGi}), wear shorts or spats and a t-shirt or rashguard, and bring water. ${gi} are gi nights — text ${SITE.phone} before you come and we'll tell you what to wear, because ${SITE.name} does not lend gis.`,
+      a: `On no-gi nights (${noGi}), wear shorts or spats and a t-shirt or rashguard, and bring water. ${gi} are gi nights. Text ${SITE.phone} before you come and we'll tell you what to wear, because ${SITE.name} does not lend gis.`,
     },
     {
       q: 'How much do classes cost?',
@@ -70,7 +70,7 @@ export function faqItems(): FaqItem[] {
     },
     {
       q: 'Do I need to book a class in advance?',
-      a: `No. Text ${SITE.phone} to say you're coming and turn up — there's no app, no account, and no booking form. Classes run ${openDaysSummary().replace(' · ', ', ')}.`,
+      a: `No. Text ${SITE.phone} to say you're coming and turn up. There's no app, no account, and no booking form. Classes run ${openDaysSummary().replace(' · ', ', ')}.`,
     },
     {
       q: 'Can women train at SPI Jiu Jitsu?',
@@ -78,7 +78,7 @@ export function faqItems(): FaqItem[] {
     },
     {
       q: 'Are you on South Padre Island?',
-      a: `No — ${SITE.name} is in Port Isabel, on the mainland side of the causeway at ${ADDRESS}, a few minutes' drive from South Padre Island. There is free parking out front.`,
+      a: `No. ${SITE.name} is in Port Isabel, on the mainland side of the causeway at ${ADDRESS}, a few minutes' drive from South Padre Island. There is free parking out front.`,
     },
   ]
 }

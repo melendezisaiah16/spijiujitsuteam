@@ -91,7 +91,7 @@ export function useSchedule(): Schedule {
     // the gym's own answer for a first-timer, so the copy defers to
     // them instead of inventing a policy.
     const gear = isGiDay(day)
-      ? 'Gi night — text us about what to wear for your first class.'
+      ? 'Gi night. Text us about what to wear for your first class.'
       : 'No-gi night. Shorts or spats, t-shirt or rashguard, water.'
 
     const first = classes[0]
@@ -105,14 +105,14 @@ export function useSchedule(): Schedule {
       // Names the beginner class from the data rather than repeating
       // "6:30 teens and adults" in prose, which would go stale silently.
       note: beginner
-        ? `No experience needed — ${beginner.name} at ${beginner.time} takes beginners any night.`
+        ? `No experience needed. ${beginner.name} at ${beginner.time} takes beginners any night.`
         : 'No experience needed on any night.',
       gear,
     }
 
     const count = classCount(classes.length)
     const dayNote = !today
-      ? `Closed today — ${count} ${day} · tap a day to switch`
+      ? `Closed today · ${count} ${day} · tap a day to switch`
       : `${count}${isToday ? ' today' : ` ${day}`} · tap a day to switch`
 
     return { day, setDay: selectDay, today, tabs, classes, summary, dayNote }

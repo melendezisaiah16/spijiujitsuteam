@@ -76,7 +76,9 @@ export function Coach() {
               the same offer the whole page is making the reader, and
               the closing line lands it. */}
           <p className="m-0">
-            He came in to try one class in {SITE.instructorSince} and never left —{' '}
+            {/* ", and" rather than a dash: the spelled year is lowercase,
+                so a full stop here would start a sentence with "six". */}
+            He came in to try one class in {SITE.instructorSince} and never left, and{' '}
             {spell(new Date().getFullYear() - SITE.instructorSince)} years later he's a purple belt
             with a team of his own, still teaching every class on the schedule himself.
           </p>

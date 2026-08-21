@@ -36,8 +36,7 @@ export function Hero() {
             in {SITE.city}.
           </h1>
           <p className="text-body m-0 max-w-[520px] text-[17px] leading-[1.55] sm:text-lg lg:text-xl">
-            Four nights a week, minutes from the causeway. First class free — no experience, nothing
-            to sign up for.
+            Four nights a week, minutes from the causeway. First class free, no experience needed.
           </p>
         </div>
 
@@ -46,7 +45,7 @@ export function Hero() {
           className="bg-amber text-midnight hover:bg-bone flex w-full flex-none flex-col gap-[5px] px-6 py-5 transition-colors sm:w-auto lg:px-[30px] lg:py-[22px]"
         >
           <span className="font-mono text-[11px] tracking-[0.12em] uppercase opacity-75">
-            Fastest way in — text us
+            Fastest way in: text us
           </span>
           <span className="font-display text-phone font-extrabold whitespace-nowrap">
             {SITE.phone}
