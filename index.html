@@ -48,6 +48,19 @@
       content="Brazilian jiu jitsu classes for adults, women, teens, and kids in Port Isabel, Texas. Mon–Thu evenings at 134 S Shore Dr Unit C. No experience needed. Your first class is free. Text (956) 667-1971."
     />
 
+    <!--
+      Lets Google use a full-size image preview in results rather than
+      the default thumbnail. Worth having on a page carrying six real
+      photographs, where the image is a large part of what makes a
+      result worth clicking.
+
+      A second robots tag appears above this one on non-production
+      builds, where the Vite plugin injects noindex. Google merges
+      multiple robots directives and takes the most restrictive, so a
+      blocked build stays blocked — verified against both builds.
+    -->
+    <meta name="robots" content="max-image-preview:large" />
+
     <link rel="canonical" href="__SITE_URL__/" />
 
     <meta property="og:type" content="website" />
