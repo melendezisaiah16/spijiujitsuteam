@@ -12,7 +12,7 @@ export function Hero() {
       <div className="absolute inset-0">
         <Picture
           id="hero-team"
-          alt="The SPI Jiu Jitsu team together after a competition, holding a championship belt."
+          alt="The SPI Jiu Jitsu team on the mats after class — kids, teens and adults in gis, every belt from white to black."
           sizes="100vw"
           priority
         />

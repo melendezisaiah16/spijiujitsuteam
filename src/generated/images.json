@@ -4,11 +4,12 @@
       640,
       960,
       1280,
-      1600
+      1920,
+      2560
     ],
-    "width": 1600,
-    "height": 1067,
-    "aspectRatio": 1.4995
+    "width": 3752,
+    "height": 1650,
+    "aspectRatio": 2.2739
   },
   "adults-training": {
     "widths": [

@@ -30,8 +30,19 @@ const IMAGES = [
   {
     id: 'hero-team',
     src: 'hero-team.jpg',
+    // The whole academy on the mat. The camera original is 1.83:1 with
+    // a ceiling above the back row and a wide empty foreground; cropped
+    // to ~2.27:1, which is what the hero slot is on a laptop, so the
+    // people survive object-cover instead of being trimmed at the
+    // edges. The floor that's left sits under the gradient and holds
+    // the headline.
+    crop: { left: 0, top: 120, width: 3752, height: 1650 },
     widths: [640, 960, 1280, 1920, 2560],
   },
+  /*
+   * hero-team-belt.jpg is the competition shot that held the hero until
+   * the whole-academy photo replaced it. Kept as a source, not built.
+   */
   {
     id: 'adults-training',
     src: 'adults-training.jpg',
